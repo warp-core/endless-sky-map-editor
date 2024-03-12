@@ -32,7 +32,7 @@ public:
     {
         if(event->type() == QEvent::FileOpen)
         {
-            window.DoOpen(dynamic_cast<QFileOpenEvent *>(event)->file());
+            window.DoOpen(static_cast<QFileOpenEvent *>(event)->file());
             return true;
         }
         return obj->eventFilter(obj, event);

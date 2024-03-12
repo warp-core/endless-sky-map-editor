@@ -739,7 +739,7 @@ void System::AddPlanet()
     set<QString> used = Used();
 
     StellarObject root;
-    int rootIndex = (int)objects.size();
+    int rootIndex = static_cast<int>(objects.size());
 
     bool isHabitable = (distance > habitable * .5 && distance < habitable * 2. - 120.);
     bool isSmall = !(rand() % 10);

@@ -4,62 +4,89 @@ on:
   push:
     branches:
       - master
+      - releases/v[0-9]+.[0-9]+.[0-9]+
   pull_request:
     types: [opened, synchronize]
+    paths:
+    - 'source/**'
+    - '.github/workflows/**'
+    - 'CMakeLists.txt'
+    - 'CMakePresets.json'
+    - 'vcpkg.json'
+    - 'vcpkg-configuration.json'
 
-defaults:
-  run:
-    shell: bash
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.head_ref || github.run_id }}
+  cancel-in-progress: true
 
 jobs:
-  build:
-  
+  build_ubuntu:
+    name: Ubuntu
+    runs-on: ubuntu-${{ matrix.os }}
     strategy:
       matrix:
-        include:
-          - target: ubuntu-latest
-            artifact: endless-sky-editor
-            binary: endless-sky-editor
-          - target: ubuntu-18.04
-            artifact: endless-sky-editor
-            binary: endless-sky-editor
-          - target: windows-latest
-            artifact: release/endless-sky-editor.exe
-            binary: release/endless-sky-editor.exe
-          - target: macos-latest
-            artifact: endless-sky-editor.app/
-            binary: endless-sky-editor.app/Contents/MacOS/endless-sky-editor
-
-    runs-on: ${{ matrix.target }}
-
+        os: [20.04, 22.04]
     steps:
-    - uses: actions/checkout@v2
-    - name: Cache Qt
-      id: cache-qt
-      uses: actions/cache@v1
+    - uses: actions/checkout@v4
       with:
-        path: ${{ github.workspace }}/Qt/
-        key: ${{ runner.os }}-QtCache
-
-    - name: Install Qt
-      uses: jurplel/install-qt-action@v2
+        show-progress: false
+    - name: Install development dependencies
+      run: |
+        sudo rm /etc/apt/sources.list.d/* && sudo dpkg --clear-avail # Speed up installation and get rid of unwanted lists
+        sudo apt-get update
+        sudo apt-get install -y --no-install-recommends libxmu-dev libxi-dev libgl-dev libglu1-mesa-dev libgles2-mesa-dev libwayland-dev libxkbcommon-dev libegl1-mesa-dev libosmesa6 mesa-utils libglvnd-dev x11-utils
+    - uses: lukka/get-cmake@latest
+    - uses: lukka/run-vcpkg@v11
+    - uses: lukka/run-cmake@v10
       with:
-        version: "5.15.2"
-        dir: ${{ github.workspace }}/Qt/
-        arch: win64_mingw81 # This is only used (and needed) on windows, so we can safely specify it for all OSes
-        cached: ${{ steps.cache-qt.outputs.cache-hit }}
+        configurePreset: 'linux-release'
+        buildPreset: 'linux-ci-release'
 
-    - name: Run qmake
-      run: qmake
 
-    - name: Run make
-      run: make -j $(nproc)
-
-    - name: Run --version
-      run: ./${{ matrix.binary }} --version
-
-    - name: Upload artifact
-      uses: actions/upload-artifact@v2
+  build_windows:
+    name: Windows
+    runs-on: windows-2022
+    steps:
+    - uses: actions/checkout@v4
       with:
-        name: ${{ matrix.target }}
-        path: ${{ matrix.artifact }}
+        show-progress: false
+    - uses: lukka/get-cmake@latest
+    - uses: lukka/run-vcpkg@v11
+    - uses: lukka/run-cmake@v10
+      with:
+        configurePreset: 'mingw-release'
+        buildPreset: 'mingw-ci-rleease'
+
+
+  build_windows_clang:
+    name: Windows Clang
+    runs-on: windows-2022
+    steps:
+    - uses: actions/checkout@v4
+      with:
+        show-progress: false
+    - uses: lukka/get-cmake@latest
+    - uses: lukka/run-vcpkg@v11
+    - uses: lukka/run-cmake@v10
+      with:
+        configurePreset: 'clang-cl-release'
+        buildPreset: 'clang-cl-ci-release'
+
+
+  build_macos:
+    name: MacOS
+    runs-on: macos-13
+    steps:
+    - uses: actions/checkout@v4
+      with:
+        show-progress: false
+    - name: Install pkg-config
+      run: type -P pkg-config || brew install pkg-config
+    - uses: lukka/get-cmake@latest
+    - uses: lukka/run-vcpkg@v11
+    - uses: lukka/run-cmake@v10
+      with:
+        configurePreset: 'macos-release'
+        buildPreset: 'macos-ci-release'
+

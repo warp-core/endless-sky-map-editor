@@ -1,0 +1,2 @@
+[Paths]
+Prefix = @CMAKE_BINARY_DIR@/vcpkg_installed/@VCPKG_TARGET_TRIPLET@/@DEBUG_PREFIX@Qt6/

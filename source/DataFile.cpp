@@ -39,7 +39,6 @@ void DataFile::Load(const QString &path)
     if(!file.open(QFile::ReadOnly | QFile::Text))
         return;
     QTextStream in(&file);
-    in.setCodec("UTF-8");
 
     vector<DataNode *> stack(1, &root);
     vector<int> whiteStack(1, -1);
