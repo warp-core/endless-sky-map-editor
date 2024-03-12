@@ -22,8 +22,8 @@ PARTICULAR PURPOSE.  See the GNU General Public License for more details.
 #include <QLineEdit>
 #include <QMessageBox>
 #include <QPlainTextEdit>
-#include <QRegExp>
-#include <QRegExpValidator>
+#include <QRegularExpression>
+#include <QRegularExpressionValidator>
 
 #include <cmath>
 #include <limits>
@@ -52,11 +52,11 @@ PlanetView::PlanetView(Map &mapData, QWidget *parent) :
     landscape->setMaximumHeight(360);
 
     description = new QPlainTextEdit(this);
-    description->setTabStopWidth(20);
+    description->setTabStopDistance(20);
     connect(description, SIGNAL(textChanged()), this, SLOT(DescriptionChanged()));
 
     spaceport = new QPlainTextEdit(this);
-    spaceport->setTabStopWidth(20);
+    spaceport->setTabStopDistance(20);
     connect(spaceport, SIGNAL(textChanged()), this, SLOT(SpaceportDescriptionChanged()));
 
     shipyard = new QLineEdit(this);
@@ -65,30 +65,30 @@ PlanetView::PlanetView(Map &mapData, QWidget *parent) :
     connect(outfitter, SIGNAL(editingFinished()), this, SLOT(OutfitterChanged()));
 
     reputation = new QLineEdit(this);
-    reputation->setValidator(new QRegExpValidator(QRegExp("-?\\d*\\.?\\d*"), reputation));
+    reputation->setValidator(new QRegularExpressionValidator(QRegularExpression("-?\\d*\\.?\\d*"), reputation));
     connect(reputation, SIGNAL(editingFinished()), this, SLOT(ReputationChanged()));
 
     bribe = new QLineEdit(this);
-    bribe->setValidator(new QRegExpValidator(QRegExp("0||0?\\.\\d*"), bribe));
+    bribe->setValidator(new QRegularExpressionValidator(QRegularExpression("0||0?\\.\\d*"), bribe));
     connect(bribe, SIGNAL(editingFinished()), this, SLOT(BribeChanged()));
 
     security = new QLineEdit(this);
-    security->setValidator(new QRegExpValidator(QRegExp("0||0?\\.\\d*"), security));
+    security->setValidator(new QRegularExpressionValidator(QRegularExpression("0||0?\\.\\d*"), security));
     connect(security, SIGNAL(editingFinished()), this, SLOT(SecurityChanged()));
 
     tribute = new QLineEdit(this);
-    tribute->setValidator(new QRegExpValidator(QRegExp("\\d*"), tribute));
+    tribute->setValidator(new QRegularExpressionValidator(QRegularExpression("\\d*"), tribute));
     connect(tribute, SIGNAL(editingFinished()), this, SLOT(TributeChanged()));
 
     tributeThreshold = new QLineEdit(this);
-    tributeThreshold->setValidator(new QRegExpValidator(QRegExp("\\d*"), tributeThreshold));
+    tributeThreshold->setValidator(new QRegularExpressionValidator(QRegularExpression("\\d*"), tributeThreshold));
     connect(tributeThreshold, SIGNAL(editingFinished()), this, SLOT(TributeThresholdChanged()));
 
     tributeFleetName = new QLineEdit(this);
     connect(tributeFleetName, SIGNAL(editingFinished()), this, SLOT(TributeFleetNameChanged()));
 
     tributeFleetQuantity = new QLineEdit(this);
-    tributeFleetQuantity->setValidator(new QRegExpValidator(QRegExp("\\d*"), tributeFleetQuantity));
+    tributeFleetQuantity->setValidator(new QRegularExpressionValidator(QRegularExpression("\\d*"), tributeFleetQuantity));
     connect(tributeFleetQuantity, SIGNAL(editingFinished()), this, SLOT(TributeFleetQuantityChanged()));
 
 
@@ -460,7 +460,7 @@ vector<QString> PlanetView::ToList(const QString &str)
 {
     vector<QString> result;
 
-    QStringList strings = str.split(",", QString::SkipEmptyParts);
+    QStringList strings = str.split(",", Qt::SkipEmptyParts);
     for(const QString &token : strings)
         result.emplace_back(token.trimmed());
 
