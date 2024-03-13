@@ -130,6 +130,7 @@
       "description": "Builds for Linux like an official release",
       "inherits": "release",
       "cacheVariables": {
+        "ES_USE_VCPKG": "ON",
         "VCPKG_HOST_TRIPLET": "linux64-release",
         "VCPKG_TARGET_TRIPLET": "linux64-release"
       }
