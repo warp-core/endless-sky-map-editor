@@ -36,7 +36,9 @@ jobs:
       run: |
         sudo rm /etc/apt/sources.list.d/* && sudo dpkg --clear-avail # Speed up installation and get rid of unwanted lists
         sudo apt-get update
-        sudo apt-get install -y --no-install-recommends autoconf-archive libxmu-dev libxi-dev libgl-dev libglu1-mesa-dev libgles2-mesa-dev libwayland-dev libxkbcommon-dev libegl1-mesa-dev libosmesa6 mesa-utils libglvnd-dev x11-utils
+        sudo apt-get install -y --no-install-recommends autoconf-archive libx11-xcb-dev libxrender-dev  libxkbcommon-x11-dev \
+          libxmu-dev libxi-dev libgl-dev libglu1-mesa-dev libgles2-mesa-dev libwayland-dev libxkbcommon-dev libegl1-mesa-dev \
+          libosmesa6 mesa-utils libglvnd-dev x11-utils
     - uses: lukka/get-cmake@v3.28.3
     - uses: lukka/run-vcpkg@v11
     - uses: lukka/run-cmake@v10
@@ -83,7 +85,7 @@ jobs:
       with:
         show-progress: false
     - name: Install pkg-config
-      run: brew install automake
+      run: brew install automake autoconf-archive
     - uses: lukka/get-cmake@v3.28.3
     - uses: lukka/run-vcpkg@v11
     - uses: lukka/run-cmake@v10
