@@ -175,8 +175,8 @@
         "strategy": "external"
       },
       "cacheVariables": {
-        "VCPKG_HOST_TRIPLET": "x64-windows",
-        "VCPKG_TARGET_TRIPLET": "x64-windows",
+        "VCPKG_HOST_TRIPLET": "x64-windows-release",
+        "VCPKG_TARGET_TRIPLET": "x64-windows-release",
         "CMAKE_CXX_COMPILER": "clang-cl.exe"
       },
       "condition": {
