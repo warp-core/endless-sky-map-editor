@@ -59,8 +59,8 @@
       "inherits": "base",
       "cacheVariables": {
         "CMAKE_OSX_ARCHITECTURES": "x86_64",
-        "VCPKG_HOST_TRIPLET": "x64-osx-dynamic",
-        "VCPKG_TARGET_TRIPLET": "x64-osx-dynamic"
+        "VCPKG_HOST_TRIPLET": "x64-osx",
+        "VCPKG_TARGET_TRIPLET": "x64-osx"
       },
       "condition": {
         "type": "equals",
@@ -75,7 +75,8 @@
       "inherits": "base",
       "cacheVariables": {
         "CMAKE_OSX_ARCHITECTURES": "arm64",
-        "VCPKG_TARGET_TRIPLET": "arm64-osx-dynamic"
+        "VCPKG_HOST_TRIPLET": "arm64-osx",
+        "VCPKG_TARGET_TRIPLET": "arm64-osx"
       },
       "architecture": {
         "value": "arm64",
