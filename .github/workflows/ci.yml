@@ -57,7 +57,7 @@ jobs:
     - uses: lukka/run-cmake@v10
       with:
         configurePreset: 'mingw-release'
-        buildPreset: 'mingw-ci-rleease'
+        buildPreset: 'mingw-ci-release'
 
 
   build_windows_clang:
