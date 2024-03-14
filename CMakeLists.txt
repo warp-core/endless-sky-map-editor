@@ -81,14 +81,14 @@ if(APPLE AND ES_CREATE_BUNDLE)
 
 	# Create the icns file, required for the bundle icon.
 	add_custom_command(
-		OUTPUT "${CMAKE_CURRENT_SOURCE_DIR}/resources/endless-sky.icns"
+		OUTPUT "${CMAKE_CURRENT_SOURCE_DIR}/resources/endless-sky-editor.icns"
 		COMMAND iconutil -c icns -o resources/endless-sky-editor.icns resources/endless-sky-editor.iconset
 		DEPENDS resources/endless-sky-editor.iconset/icon_16x16.png resources/endless-sky-editor.iconset/icon_32x32.png
 			resources/endless-sky-editor.iconset/icon_256x256.png
 		WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}" VERBATIM)
 
 	# Now do the same to standalone files.
-	foreach(file "license.txt" "resources/endless-sky.icns")
+	foreach(file "license.txt" "resources/endless-sky-editor.icns")
 		target_sources(EndlessSkyEditor PRIVATE ${file})
 		set_source_files_properties(${file} PROPERTIES MACOSX_PACKAGE_LOCATION "Resources/")
 	endforeach()
