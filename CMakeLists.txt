@@ -88,7 +88,7 @@ if(APPLE AND ES_CREATE_BUNDLE)
 		WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}" VERBATIM)
 
 	# Now do the same to standalone files.
-	foreach(file "license.txt" "resources/icons/endless-sky.icns")
+	foreach(file "license.txt" "resources/endless-sky.icns")
 		target_sources(EndlessSkyEditor PRIVATE ${file})
 		set_source_files_properties(${file} PROPERTIES MACOSX_PACKAGE_LOCATION "Resources/")
 	endforeach()
