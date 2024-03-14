@@ -84,7 +84,7 @@ if(APPLE AND ES_CREATE_BUNDLE)
 		OUTPUT "${CMAKE_CURRENT_SOURCE_DIR}/resources/endless-sky.icns"
 		COMMAND iconutil -c icns -o resources/endless-sky-editor.icns resources/endless-sky-editor.iconset
 		DEPENDS resources/endless-sky-editor.iconset/icon_16x16.png resources/endless-sky-editor.iconset/icon_32x32.png
-			resources/endless-sky-editor.iconset/icon_128x128.png
+			resources/endless-sky-editor.iconset/icon_256x256.png
 		WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}" VERBATIM)
 
 	# Now do the same to standalone files.
