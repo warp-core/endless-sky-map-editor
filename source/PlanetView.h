@@ -36,7 +36,8 @@ public:
 signals:
 
 public slots:
-    void NameChanged();
+    void TrueNameChanged();
+    void DisplayNameChanged();
     void AttributesChanged();
     void DescriptionChanged();
     void SpaceportDescriptionChanged();
@@ -60,7 +61,8 @@ private:
     Map &mapData;
     StellarObject *object = nullptr;
 
-    QLineEdit *name;
+    QLineEdit *trueName;
+    QLineEdit *displayName;
     QLineEdit *attributes;
     LandscapeView *landscape;
     QPlainTextEdit *description;

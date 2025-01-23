@@ -30,11 +30,13 @@ void Planet::Load(const DataNode &node)
 {
     if(node.Size() < 2)
         return;
-    name = node.Token(1);
+    trueName = node.Token(1);
 
     for(const DataNode &child : node)
     {
-        if(child.Token(0) == "attributes")
+        if(child.Token(0) == "display name" && child.Size() >= 2)
+            displayName = child.Token(1);
+        else if(child.Token(0) == "attributes")
         {
             for(int i = 1; i < child.Size(); ++i)
                 attributes.push_back(child.Token(i));
@@ -74,6 +76,9 @@ void Planet::Load(const DataNode &node)
         else
             unparsed.push_back(child);
     }
+
+    if(displayName.isEmpty())
+        displayName = trueName;
 }
 
 
@@ -101,10 +106,12 @@ void  Planet::LoadTribute(const DataNode &node)
 
 void Planet::Save(DataWriter &file) const
 {
-    file.Write("planet", name);
+    file.Write("planet", trueName);
     file.BeginChild();
     {
-        if(!attributes.empty())
+        if(displayName != trueName)
+            file.Write("display name", displayName);
+        else if(!attributes.empty())
         {
             file.WriteToken("attributes");
             for(const QString &it : attributes)
@@ -164,9 +171,16 @@ void Planet::Save(DataWriter &file) const
 
 
 // Get the name of the planet.
-const QString &Planet::Name() const
+const QString &Planet::TrueName() const
 {
-    return name;
+    return trueName;
+}
+
+
+
+const QString &Planet::DisplayName() const
+{
+    return displayName;
 }
 
 
@@ -297,9 +311,16 @@ const QString &Planet::TributeFleetName() const
     return tributeFleetName;
 }
 
-void Planet::SetName(const QString &name)
+void Planet::SetTrueName(const QString &name)
 {
-    this->name = name;
+    trueName = name;
+}
+
+
+
+void Planet::SetDisplayName(const QString &name)
+{
+    displayName = name;
 }
 
 

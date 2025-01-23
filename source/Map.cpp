@@ -251,6 +251,6 @@ void Map::RenamePlanet(StellarObject *object, const QString &name)
         // Erase the previous definition.
         planets.erase(it);
     }
-    planets[name].SetName(name);
+    planets[name].SetTrueName(name);
     object->SetPlanet(name);
 }

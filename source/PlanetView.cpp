@@ -42,8 +42,10 @@ namespace {
 PlanetView::PlanetView(Map &mapData, QWidget *parent) :
     QWidget(parent), mapData(mapData)
 {
-    name = new QLineEdit(this);
-    connect(name, SIGNAL(editingFinished()), this, SLOT(NameChanged()));
+    trueName = new QLineEdit(this);
+    connect(trueName, SIGNAL(editingFinished()), this, SLOT(TrueNameChanged()));
+    displayName = new QLineEdit(this);
+    connect(displayName, SIGNAL(editingFinished()), this, SLOT(DisplayNameChanges()));
     attributes = new QLineEdit(this);
     connect(attributes, SIGNAL(editingFinished()), this, SLOT(AttributesChanged()));
 
@@ -96,7 +98,9 @@ PlanetView::PlanetView(Map &mapData, QWidget *parent) :
     int row = 0;
 
     layout->addWidget(new QLabel("Planet:", this), row, 0);
-    layout->addWidget(name, row++, 1);
+    layout->addWidget(trueName, row++, 1);
+    layout->addWidget(new QLabel("Display name:", this), row, 0);
+    layout->addWidget(displayName, row++, 1);
     layout->addWidget(new QLabel("Attributes:", this), row, 0);
     layout->addWidget(attributes, row++, 1);
 
@@ -153,7 +157,8 @@ void PlanetView::SetPlanet(StellarObject *object)
 
     if(it == mapData.Planets().end())
     {
-        name->clear();
+        trueName->clear();
+        displayName->clear();
         attributes->clear();
         landscape->SetPlanet(nullptr);
         description->clear();
@@ -171,7 +176,8 @@ void PlanetView::SetPlanet(StellarObject *object)
     else
     {
         Planet &planet = it->second;
-        name->setText(planet.Name());
+        trueName->setText(planet.TrueName());
+        displayName->setText(planet.DisplayName());
         attributes->setText(ToString(planet.Attributes()));
         landscape->SetPlanet(&planet);
 
@@ -212,23 +218,24 @@ void PlanetView::Reinitialize()
 
 
 
-void PlanetView::NameChanged()
+void PlanetView::TrueNameChanged()
 {
-    if(!object || object->GetPlanet() == name->text() || name->text().isEmpty())
+    if(!object || object->GetPlanet() == trueName->text() || trueName->text().isEmpty())
         return;
 
-    if(mapData.Planets().count(name->text()))
+    if(mapData.Planets().count(trueName->text()))
     {
         QMessageBox::warning(this, "Duplicate name",
-            "A planet named \"" + name->text() + "\" already exists.");
+            "A planet named \"" + trueName->text() + "\" already exists.");
     }
     else
     {
         // Copy the planet data from the old name to the new name..
-        mapData.RenamePlanet(object, name->text());
+        mapData.RenamePlanet(object, trueName->text());
 
         // Update (or create, if not previously a planet) the new name's data.
-        Planet &planet = mapData.Planets()[name->text()];
+        Planet &planet = mapData.Planets()[trueName->text()];
+        planet.SetDisplayName(displayName->text());
         planet.Attributes() = ToList(attributes->text());
         planet.SetLandscape(landscape->Landscape());
         landscape->SetPlanet(&planet);
@@ -244,6 +251,25 @@ void PlanetView::NameChanged()
 
         mapData.SetChanged();
     }
+}
+
+
+
+void PlanetView::DisplayNameChanged()
+{
+    if(!object || object->GetPlanet().isEmpty())
+        return;
+    
+    Planet &planet = mapData.Planets()[object->GetPlanet()];
+    if(planet.DisplayName() == displayName->text())
+        return;
+    if(planet.DisplayName().isEmpty() && displayName->text() == object->GetPlanet())
+        return;
+    if(displayName->text() == object->GetPlanet())
+        planet.SetDisplayName(QString());
+    else
+        planet.SetDisplayName(displayName->text());
+    mapData.SetChanged();
 }
 
 
