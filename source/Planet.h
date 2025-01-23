@@ -37,7 +37,8 @@ public:
     void Save(DataWriter &file) const;
 
     // Get the name of the planet.
-    const QString &Name() const;
+    const QString &TrueName() const;
+    const QString &DisplayName() const;
     // Get the planet's descriptive text.
     const QString &Description() const;
     // Get the landscape sprite.
@@ -79,7 +80,8 @@ public:
     const QString &TributeFleetName() const;
 
     // Editing a planet:
-    void SetName(const QString &name);
+    void SetTrueName(const QString &name);
+    void SetDisplayName(const QString &name);
     void SetLandscape(const QString &sprite);
     void SetDescription(const QString &text);
     void SetSpaceportDescription(const QString &text);
@@ -95,7 +97,8 @@ public:
     void SetTributeFleetQuantity(double value);
 
 private:
-    QString name;
+    QString trueName;
+    QString displayName;
     QString landscape;
     QString description;
     QString spaceport;
