@@ -54,7 +54,8 @@ public:
     void Save(DataWriter &file) const;
 
     // Get this system's name and position (in the star map).
-    const QString &Name() const;
+    const QString &TrueName() const;
+    const QString &DisplayName() const;
     const QVector2D &Position() const;
     // Get this system's government.
     const QString &Government() const;
@@ -93,7 +94,8 @@ public:
 
     // Modify the system:
     void Init(const QString &name, const QVector2D &position);
-    void SetName(const QString &name);
+    void SetTrueName(const QString &name);
+    void SetDisplayName(const QString &name);
     void SetPosition(const QVector2D &pos);
     void SetGovernment(const QString &gov);
     void ToggleLink(System *other);
@@ -122,7 +124,8 @@ private:
 
 private:
     // Name and position (within the star map) of this system.
-    QString name;
+    QString trueName;
+    QString displayName;
     QVector2D position;
     QString government;
 

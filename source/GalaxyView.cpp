@@ -207,7 +207,7 @@ void GalaxyView::DeleteSystem()
 
     System *system = systemView->Selected();
     QMessageBox::StandardButton button = QMessageBox::question(this, "Delete system",
-        "Are you sure you want to delete \"" + system->Name() + "\"?");
+        "Are you sure you want to delete \"" + system->TrueName() + "\"?");
     if(button == QMessageBox::Yes)
     {
         // Deselect this system.
@@ -225,7 +225,7 @@ void GalaxyView::DeleteSystem()
         }
 
         // Remove this system from known systems.
-        mapData.Systems().erase(system->Name());
+        mapData.Systems().erase(system->TrueName());
         mapData.SetChanged();
     }
     update();

@@ -36,10 +36,13 @@ DetailView::DetailView(Map &mapData, GalaxyView *galaxyView, QWidget *parent) :
     QVBoxLayout *layout = new QVBoxLayout(this);
 
     layout->addWidget(new QLabel("System Name:", this));
-    name = new QLineEdit(this);
-    connect(name, SIGNAL(editingFinished()), this, SLOT(NameChanged()));
-    layout->addWidget(name);
-
+    trueName = new QLineEdit(this);
+    connect(trueName, SIGNAL(editingFinished()), this, SLOT(TrueNameChanged()));
+    layout->addWidget(trueName);
+    layout->addWidget(new QLabel("Display name:", this));
+    displayName = new QLineEdit(this);
+    connect(displayName, SIGNAL(editingFinished()), this, SLOT(DisplayNameChanged()));
+    layout->addWidget(displayName);
 
     layout->addWidget(new QLabel("Government:", this));
     government = new QLineEdit(this);
@@ -95,7 +98,8 @@ void DetailView::SetSystem(System *system)
     this->system = system;
     if(system)
     {
-        name->setText(system->Name());
+        trueName->setText(system->TrueName());
+        displayName->setText(system->DisplayName());
         government->setText(system->Government());
         
         UpdateCommodities();
@@ -104,7 +108,8 @@ void DetailView::SetSystem(System *system)
     }
     else
     {
-        name->clear();
+        trueName->clear();
+        displayName->clear();
         government->clear();
 
         tradeWidget->clear();
@@ -194,16 +199,33 @@ bool DetailView::eventFilter(QObject *object, QEvent *event)
 
 
 // Change the name of the selected system.
-void DetailView::NameChanged()
+void DetailView::TrueNameChanged()
 {
-    name->blockSignals(true);
-    if(galaxyView && system && system->Name() != name->text())
+    trueName->blockSignals(true);
+    if(galaxyView && system && system->TrueName() != trueName->text())
     {
         // Attempt the name change in GalaxyView, to update both this and SystemView.
-        if(!galaxyView->RenameSystem(system->Name(), name->text()))
-            name->setText(system->Name());
+        if(!galaxyView->RenameSystem(system->TrueName(), trueName->text()))
+            trueName->setText(system->TrueName());
     }
-    name->blockSignals(false);
+    trueName->blockSignals(false);
+}
+
+
+
+void DetailView::DisplayNameChanged()
+{
+    if(!system)
+        return;
+    if(system->DisplayName() == displayName->text())
+        return;
+    if(system->DisplayName().isEmpty() && displayName->text() == system->TrueName())
+        return;
+    if(displayName->text() == system->TrueName())
+        system->SetDisplayName(QString());
+    else
+        system->SetDisplayName(displayName->text());
+    mapData.SetChanged();
 }
 
 
