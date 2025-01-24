@@ -44,7 +44,8 @@ public:
 signals:
 
 public slots:
-    void NameChanged();
+    void TrueNameChanged();
+    void DisplayNameChanged();
     void GovernmentChanged();
     void CommodityClicked(QTreeWidgetItem *item, int column);
     void CommodityChanged(int value);
@@ -60,7 +61,8 @@ private:
     GalaxyView *galaxyView = nullptr;
     System *system = nullptr;
 
-    QLineEdit *name = nullptr;
+    QLineEdit *trueName = nullptr;
+    QLineEdit *displayName = nullptr;
     QLineEdit *government = nullptr;
 
     QTreeWidget *tradeWidget = nullptr;

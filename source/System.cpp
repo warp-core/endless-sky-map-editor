@@ -46,14 +46,16 @@ void System::Load(const DataNode &node)
 {
     if(node.Size() < 2)
         return;
-    name = node.Token(1);
+    trueName = node.Token(1);
 
     habitable = numeric_limits<double>::quiet_NaN();
     belt = numeric_limits<double>::quiet_NaN();
 
     for(const DataNode &child : node)
     {
-        if(child.Token(0) == "pos" && child.Size() >= 3)
+        if(child.Token(0) == "display name" && child.Size() >= 2)
+            displayName = child.Token(1);
+        else if(child.Token(0) == "pos" && child.Size() >= 3)
             position = QVector2D(child.Value(1), child.Value(2));
         else if(child.Token(0) == "government" && child.Size() >= 2)
             government = child.Token(1);
@@ -80,16 +82,21 @@ void System::Load(const DataNode &node)
         else
             unparsed.push_back(child);
     }
+
+    if(displayName.isEmpty())
+        displayName = trueName;
 }
 
 
 
 void System::Save(DataWriter &file) const
 {
-    file.Write("system", name);
+    file.Write("system", trueName);
     file.BeginChild();
     {
         file.Write("pos", position.x(), position.y());
+        if(displayName != trueName)
+            file.Write("display name", displayName);
         if(!government.isEmpty())
             file.Write("government", government);
         if(!std::isnan(habitable))
@@ -122,9 +129,16 @@ void System::Save(DataWriter &file) const
 
 
 // Get this system's name and position (in the star map).
-const QString &System::Name() const
+const QString &System::TrueName() const
 {
-    return name;
+    return trueName;
+}
+
+
+
+const QString &System::DisplayName() const
+{
+    return displayName;
 }
 
 
@@ -355,7 +369,8 @@ void System::SaveObject(DataWriter &file, const StellarObject &object) const
 
 void System::Init(const QString &name, const QVector2D &position)
 {
-    this->name = name;
+    trueName = name;
+    displayName = name;
     this->position = position;
 
     Randomize(true, false);
@@ -365,9 +380,16 @@ void System::Init(const QString &name, const QVector2D &position)
 
 
 
-void System::SetName(const QString &name)
+void System::SetTrueName(const QString &name)
 {
-    this->name = name;
+    trueName = name;
+}
+
+
+
+void System::SetDisplayName(const QString &name)
+{
+    displayName = name;
 }
 
 
@@ -392,13 +414,13 @@ void System::ToggleLink(System *other)
     if(!other || other == this)
         return;
 
-    if(links.erase(other->name))
-        other->links.erase(name);
+    if(links.erase(other->trueName))
+        other->links.erase(trueName);
     else
     {
         // These systems were not linked, so link them.
-        links.emplace(other->name);
-        other->links.emplace(name);
+        links.emplace(other->trueName);
+        other->links.emplace(trueName);
     }
 }
 

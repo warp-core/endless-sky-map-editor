@@ -250,7 +250,7 @@ void PlanetView::DisplayNameChanged()
 {
     if(!object || object->GetPlanet().isEmpty())
         return;
-    
+
     Planet &planet = mapData.Planets()[object->GetPlanet()];
     if(planet.DisplayName() == displayName->text())
         return;
