@@ -74,10 +74,6 @@ public:
     double Tribute() const;
     // Combat Rating level before you are an actual threat. Balance this with tribute and fleet.
     double TributeThreshold() const;
-    // Number of Defending Ships
-    double TributeFleetQuantity() const;
-    // Get the fleet assigned to protect planet
-    const QString &TributeFleetName() const;
 
     // Editing a planet:
     void SetTrueName(const QString &name);
@@ -93,8 +89,7 @@ public:
     void SetSecurity(double value);
     void SetTribute(double value);
     void SetTributeThreshold(double value);
-    void SetTributeFleetName(QString &value);
-    void SetTributeFleetQuantity(double value);
+    std::vector<QString> &TributeFleetNames();
 
 private:
     QString trueName;
@@ -104,7 +99,7 @@ private:
     QString spaceport;
     QString government;
     QString music;
-    QString tributeFleetName;
+    std::vector<QString> tributeFleetNames;
 
     // Use a vector so the printing order is preserved.
     std::vector<QString> attributes;

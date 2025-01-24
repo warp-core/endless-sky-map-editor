@@ -92,10 +92,10 @@ void  Planet::LoadTribute(const DataNode &node)
     {
         if(child.Token(0) == "threshold" && child.Size() >= 2)
             tributeThreshold = child.Value(1);
-        else if(child.Token(0) == "fleet" && child.Size() >= 3)
+        else if(child.Token(0) == "fleet" && child.Size() >= 2)
         {
-            tributeFleetName = child.Token(1);
-            tributeFleetQuantity = child.Value(2);
+            int fleetCount = child.Size() >= 3 ? child.Value(2) : 1;
+            tributeFleetNames.insert(tributeFleetNames.end(), fleetCount, child.Token(1));
         }
         else
             tributeUnparsed.push_back(child);
@@ -156,7 +156,31 @@ void Planet::Save(DataWriter &file) const
             file.BeginChild();
             {
                 file.Write("threshold", tributeThreshold);
-                file.Write("fleet", tributeFleetName, tributeFleetQuantity);
+                QString lastFleetName;
+                int lastFleetCount = 0;
+                for(int i = 0; i < tributeFleetNames.size(); ++i)
+                {
+                    if(lastFleetCount == 0)
+                    {
+                        ++lastFleetCount;
+                        lastFleetName = tributeFleetNames[i];
+                    }
+                    else if(tributeFleetNames[i] == lastFleetName)
+                        ++lastFleetCount;
+                    else
+                    {
+                        if(lastFleetCount == 1)
+                            file.Write("fleet", lastFleetName);
+                        else
+                            file.Write("fleet", lastFleetName, lastFleetCount);
+                        lastFleetName = tributeFleetNames[i];
+                        lastFleetCount = 1;
+                    }
+                }
+                if(lastFleetCount == 1)
+                    file.Write("fleet", lastFleetName);
+                else
+                    file.Write("fleet", lastFleetName, lastFleetCount);
                 for(const DataNode &node : tributeUnparsed)
                     file.Write(node);
             }
@@ -298,19 +322,6 @@ double Planet::TributeThreshold() const
 
 
 
-double Planet::TributeFleetQuantity() const
-{
-    return tributeFleetQuantity;
-}
-
-
-
-const QString &Planet::TributeFleetName() const
-
-{
-    return tributeFleetName;
-}
-
 void Planet::SetTrueName(const QString &name)
 {
     trueName = name;
@@ -402,14 +413,7 @@ void Planet::SetTributeThreshold(double value)
 
 
 
-void Planet::SetTributeFleetName(QString &value)
+vector<QString> &Planet::TributeFleetNames()
 {
-    tributeFleetName = value;
-}
-
-
-
-void Planet::SetTributeFleetQuantity(double value)
-{
-    tributeFleetQuantity = value;
+    return tributeFleetNames;
 }
