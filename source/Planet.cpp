@@ -158,7 +158,7 @@ void Planet::Save(DataWriter &file) const
                 file.Write("threshold", tributeThreshold);
                 QString lastFleetName;
                 int lastFleetCount = 0;
-                for(int i = 0; i < tributeFleetNames.size(); ++i)
+                for(size_t i = 0; i < tributeFleetNames.size(); ++i)
                 {
                     if(lastFleetCount == 0)
                     {
