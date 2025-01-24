@@ -112,7 +112,6 @@ private:
 
     double tribute = std::numeric_limits<double>::quiet_NaN();
     double tributeThreshold = std::numeric_limits<double>::quiet_NaN();
-    double tributeFleetQuantity = std::numeric_limits<double>::quiet_NaN();
     std::list<DataNode> unparsed;
     std::list<DataNode> tributeUnparsed;
 };
