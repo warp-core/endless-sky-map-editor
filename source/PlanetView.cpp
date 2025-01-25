@@ -224,21 +224,7 @@ void PlanetView::TrueNameChanged()
         // Copy the planet data from the old name to the new name..
         mapData.RenamePlanet(object, trueName->text());
 
-        // Update (or create, if not previously a planet) the new name's data.
-        Planet &planet = mapData.Planets()[trueName->text()];
-        planet.SetDisplayName(displayName->text());
-        planet.Attributes() = ToList(attributes->text());
-        planet.SetLandscape(landscape->Landscape());
-        landscape->SetPlanet(&planet);
-        planet.SetDescription(description->toPlainText());
-        planet.SetSpaceportDescription(spaceport->toPlainText());
-
-        if(!reputation->text().isEmpty())
-            planet.SetRequiredReputation(reputation->text().toDouble());
-        if(!bribe->text().isEmpty())
-            planet.SetBribe(bribe->text().toDouble());
-        if(!security->text().isEmpty())
-            planet.SetSecurity(security->text().toDouble());
+        landscape->SetPlanet(&(mapData.Planets()[trueName->text()]));
 
         mapData.SetChanged();
     }
