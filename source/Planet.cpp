@@ -76,9 +76,6 @@ void Planet::Load(const DataNode &node)
         else
             unparsed.push_back(child);
     }
-
-    if(displayName.isEmpty())
-        displayName = trueName;
 }
 
 
@@ -109,8 +106,8 @@ void Planet::Save(DataWriter &file) const
     file.Write("planet", trueName);
     file.BeginChild();
     {
-        if(displayName != trueName)
-            file.Write("display name", displayName);
+        if(displayName)
+            file.Write("display name", *displayName);
         else if(!attributes.empty())
         {
             file.WriteToken("attributes");
@@ -202,9 +199,16 @@ const QString &Planet::TrueName() const
 
 
 
+bool Planet::HasDisplayName() const
+{
+    return displayName.has_value();
+}
+
+
+
 const QString &Planet::DisplayName() const
 {
-    return displayName;
+    return displayName.has_value() ? *displayName : trueName;
 }
 
 
@@ -331,7 +335,10 @@ void Planet::SetTrueName(const QString &name)
 
 void Planet::SetDisplayName(const QString &name)
 {
-    displayName = name;
+    if(name.isEmpty())
+        displayName.reset();
+    else
+        displayName = name;
 }
 
 

@@ -17,6 +17,7 @@ PARTICULAR PURPOSE.  See the GNU General Public License for more details.
 
 class QLineEdit;
 class QPlainTextEdit;
+class QCheckBox;
 
 class LandscapeView;
 class Map;
@@ -37,6 +38,8 @@ signals:
 
 public slots:
     void TrueNameChanged();
+    void TrueNameEdited();
+    void UseDisplayNameChanged();
     void DisplayNameChanged();
     void AttributesChanged();
     void DescriptionChanged();
@@ -61,6 +64,7 @@ private:
     StellarObject *object = nullptr;
 
     QLineEdit *trueName;
+    QCheckBox *useDisplayName;
     QLineEdit *displayName;
     QLineEdit *attributes;
     LandscapeView *landscape;

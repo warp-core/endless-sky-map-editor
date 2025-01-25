@@ -16,6 +16,7 @@ PARTICULAR PURPOSE.  See the GNU General Public License for more details.
 #include "Map.h"
 #include "StellarObject.h"
 
+#include <QCheckBox>
 #include <QGridLayout>
 #include <QHBoxLayout>
 #include <QLabel>
@@ -43,9 +44,12 @@ PlanetView::PlanetView(Map &mapData, QWidget *parent) :
     QWidget(parent), mapData(mapData)
 {
     trueName = new QLineEdit(this);
+    connect(trueName, SIGNAL(textChanged(const QString &)), this, SLOT(TrueNameEdited()));
     connect(trueName, SIGNAL(editingFinished()), this, SLOT(TrueNameChanged()));
+    useDisplayName = new QCheckBox("Display name:", this);
+    connect(useDisplayName, SIGNAL(clicked()), this, SLOT(UseDisplayNameChanged()));
     displayName = new QLineEdit(this);
-    connect(displayName, SIGNAL(editingFinished()), this, SLOT(DisplayNameChanges()));
+    connect(displayName, SIGNAL(editingFinished()), this, SLOT(DisplayNameChanged()));
     attributes = new QLineEdit(this);
     connect(attributes, SIGNAL(editingFinished()), this, SLOT(AttributesChanged()));
 
@@ -95,7 +99,7 @@ PlanetView::PlanetView(Map &mapData, QWidget *parent) :
 
     layout->addWidget(new QLabel("Planet:", this), row, 0);
     layout->addWidget(trueName, row++, 1);
-    layout->addWidget(new QLabel("Display name:", this), row, 0);
+    layout->addWidget(useDisplayName, row, 0);
     layout->addWidget(displayName, row++, 1);
     layout->addWidget(new QLabel("Attributes:", this), row, 0);
     layout->addWidget(attributes, row++, 1);
@@ -152,6 +156,7 @@ void PlanetView::SetPlanet(StellarObject *object)
     if(it == mapData.Planets().end())
     {
         trueName->clear();
+        useDisplayName->setCheckState(Qt::CheckState::Unchecked);
         displayName->clear();
         attributes->clear();
         landscape->SetPlanet(nullptr);
@@ -170,7 +175,13 @@ void PlanetView::SetPlanet(StellarObject *object)
     {
         Planet &planet = it->second;
         trueName->setText(planet.TrueName());
-        displayName->setText(planet.DisplayName());
+        bool hasDisplayName = planet.HasDisplayName();
+        useDisplayName->setCheckState(hasDisplayName ? Qt::CheckState::Checked : Qt::CheckState::Unchecked);
+        if(hasDisplayName)
+            displayName->setText(planet.DisplayName());
+        else
+            displayName->setReadOnly(true);
+        displayName->setPlaceholderText(planet.TrueName());
         attributes->setText(ToString(planet.Attributes()));
         landscape->SetPlanet(&planet);
 
@@ -232,6 +243,13 @@ void PlanetView::TrueNameChanged()
 
 
 
+void PlanetView::TrueNameEdited()
+{
+    displayName->setPlaceholderText(trueName->text());
+}
+
+
+
 void PlanetView::DisplayNameChanged()
 {
     if(!object || object->GetPlanet().isEmpty())
@@ -247,6 +265,19 @@ void PlanetView::DisplayNameChanged()
     else
         planet.SetDisplayName(displayName->text());
     mapData.SetChanged();
+}
+
+
+
+void PlanetView::UseDisplayNameChanged()
+{
+    if(!object || object->GetPlanet().isEmpty())
+        return;
+
+    if(useDisplayName->isChecked())
+        displayName->setReadOnly(false);
+    else
+        displayName->setReadOnly(true);
 }
 
 

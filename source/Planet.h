@@ -17,6 +17,7 @@ PARTICULAR PURPOSE.  See the GNU General Public License for more details.
 
 #include <limits>
 #include <list>
+#include <optional>
 #include <vector>
 
 class DataNode;
@@ -38,6 +39,7 @@ public:
 
     // Get the name of the planet.
     const QString &TrueName() const;
+    bool HasDisplayName() const;
     const QString &DisplayName() const;
     // Get the planet's descriptive text.
     const QString &Description() const;
@@ -93,7 +95,7 @@ public:
 
 private:
     QString trueName;
-    QString displayName;
+    std::optional<QString> displayName;
     QString landscape;
     QString description;
     QString spaceport;
