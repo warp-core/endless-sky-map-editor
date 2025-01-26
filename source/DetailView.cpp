@@ -16,6 +16,7 @@ PARTICULAR PURPOSE.  See the GNU General Public License for more details.
 #include "Map.h"
 #include "System.h"
 
+#include <QCheckBox>
 #include <QEvent>
 #include <QMessageBox>
 #include <QLabel>
@@ -37,9 +38,12 @@ DetailView::DetailView(Map &mapData, GalaxyView *galaxyView, QWidget *parent) :
 
     layout->addWidget(new QLabel("System Name:", this));
     trueName = new QLineEdit(this);
+    connect(trueName, SIGNAL(textChanged(const QString &)), this, SLOT(TrueNameEdited()));
     connect(trueName, SIGNAL(editingFinished()), this, SLOT(TrueNameChanged()));
     layout->addWidget(trueName);
-    layout->addWidget(new QLabel("Display name:", this));
+    useDisplayName = new QCheckBox("Display name:", this);
+    connect(useDisplayName, SIGNAL(clicked()), this, SLOT(UseDisplayNameChanged()));
+    layout->addWidget(useDisplayName);
     displayName = new QLineEdit(this);
     connect(displayName, SIGNAL(editingFinished()), this, SLOT(DisplayNameChanged()));
     layout->addWidget(displayName);
@@ -99,7 +103,18 @@ void DetailView::SetSystem(System *system)
     if(system)
     {
         trueName->setText(system->TrueName());
-        displayName->setText(system->DisplayName());
+        if(system->HasDisplayName())
+        {
+            useDisplayName->setCheckState(Qt::CheckState::Checked);
+            displayName->setText(system->DisplayName());
+            displayName->setReadOnly(false);
+        }
+        else
+        {
+            useDisplayName->setCheckState(Qt::CheckState::Unchecked);
+            displayName->clear();
+            displayName->setReadOnly(true);
+        }
         government->setText(system->Government());
         
         UpdateCommodities();
@@ -199,6 +214,13 @@ bool DetailView::eventFilter(QObject *object, QEvent *event)
 
 
 // Change the name of the selected system.
+void DetailView::TrueNameEdited()
+{
+    displayName->setPlaceholderText(trueName->text());
+}
+
+
+
 void DetailView::TrueNameChanged()
 {
     trueName->blockSignals(true);
@@ -209,6 +231,19 @@ void DetailView::TrueNameChanged()
             trueName->setText(system->TrueName());
     }
     trueName->blockSignals(false);
+}
+
+
+
+void DetailView::UseDisplayNameChanged()
+{
+    if(!system)
+        return;
+
+    if(useDisplayName->isChecked())
+        displayName->setReadOnly(false);
+    else
+        displayName->setReadOnly(true);
 }
 
 

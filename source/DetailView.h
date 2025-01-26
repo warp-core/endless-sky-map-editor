@@ -23,6 +23,7 @@ class GalaxyView;
 class Map;
 class System;
 
+class QCheckBox;
 class QLineEdit;
 class QObject;
 class QTreeWidget;
@@ -44,7 +45,9 @@ public:
 signals:
 
 public slots:
+    void TrueNameEdited();
     void TrueNameChanged();
+    void UseDisplayNameChanged();
     void DisplayNameChanged();
     void GovernmentChanged();
     void CommodityClicked(QTreeWidgetItem *item, int column);
@@ -62,6 +65,7 @@ private:
     System *system = nullptr;
 
     QLineEdit *trueName = nullptr;
+    QCheckBox *useDisplayName = nullptr;
     QLineEdit *displayName = nullptr;
     QLineEdit *government = nullptr;
 
