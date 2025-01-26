@@ -82,9 +82,6 @@ void System::Load(const DataNode &node)
         else
             unparsed.push_back(child);
     }
-
-    if(displayName.isEmpty())
-        displayName = trueName;
 }
 
 
@@ -95,8 +92,8 @@ void System::Save(DataWriter &file) const
     file.BeginChild();
     {
         file.Write("pos", position.x(), position.y());
-        if(displayName != trueName)
-            file.Write("display name", displayName);
+        if(displayName.has_value())
+            file.Write("display name", *displayName);
         if(!government.isEmpty())
             file.Write("government", government);
         if(!std::isnan(habitable))
@@ -136,9 +133,16 @@ const QString &System::TrueName() const
 
 
 
+bool System::HasDisplayName() const
+{
+    return displayName.has_value();
+}
+
+
+
 const QString &System::DisplayName() const
 {
-    return displayName;
+    return displayName.has_value() ? *displayName : trueName;
 }
 
 

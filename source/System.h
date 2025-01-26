@@ -19,6 +19,7 @@ PARTICULAR PURPOSE.  See the GNU General Public License for more details.
 #include <QString>
 
 #include <map>
+#include <optional>
 #include <set>
 #include <vector>
 
@@ -55,6 +56,7 @@ public:
 
     // Get this system's name and position (in the star map).
     const QString &TrueName() const;
+    bool HasDisplayName() const;
     const QString &DisplayName() const;
     const QVector2D &Position() const;
     // Get this system's government.
@@ -125,7 +127,7 @@ private:
 private:
     // Name and position (within the star map) of this system.
     QString trueName;
-    QString displayName;
+    std::optional<QString> displayName;
     QVector2D position;
     QString government;
 
