@@ -244,11 +244,11 @@ void GalaxyView::Recenter()
 void GalaxyView::RandomizeCommodity()
 {
     // Randomize the values of the currently selected commodity.
-    
+
     // First, make sure a system and a commodity are selected.
     if(commodity.isEmpty() || !systemView || !systemView->Selected())
         return;
-    
+
     // Next, find all the systems connected via hyperlinks to the current system.
     set<System *> connected;
     stack<System *> edge;
@@ -257,16 +257,16 @@ void GalaxyView::RandomizeCommodity()
     {
         System *system = edge.top();
         edge.pop();
-        
+
         if(connected.count(system))
             continue;
         connected.insert(system);
-        
+
         for(const QString &name : system->Links())
             if(mapData.Systems().count(name))
                 edge.push(&mapData.Systems()[name]);
     }
-    
+
     // Commodity parameters.
     static const map<QString, int> BASE = {
         {"Clothing", 140},
@@ -296,10 +296,10 @@ void GalaxyView::RandomizeCommodity()
     auto binIt = BINS.find(commodity);
     if(baseIt == BASE.end() || binIt == BINS.end())
         return;
-    
+
     // Generate the quotas for each bin level.
     const int base = baseIt->second;
-    
+
     // Try to find a set of bins to assign the systems to such that neighboring
     // systems only differ by one bin, and the desired distribution is achieved.
     map<const System *, int> bin;
@@ -310,7 +310,7 @@ void GalaxyView::RandomizeCommodity()
         vector<int> quota;
         for(int weight : binIt->second)
             quota.emplace_back((connected.size() * weight) / 100 + tries / 4 + 1);
-        
+
         vector<const System *> unassigned;
         map<const System *, int> low;
         map<const System *, int> high;
@@ -320,21 +320,21 @@ void GalaxyView::RandomizeCommodity()
             low[system] = 0;
             high[system] = quota.size();
         }
-        
+
         while(!unassigned.empty())
         {
             int i = rand() % unassigned.size();
             const System *system = unassigned[i];
             unassigned[i] = unassigned.back();
             unassigned.pop_back();
-            
+
             // Pick a bin, based on what is available.
             int possibilities = 0;
             for(int i = low[system]; i < high[system]; ++i)
                 possibilities += quota[i];
             if(!possibilities)
                 break;
-            
+
             // Pick a random one of those items to assign to it.
             int index = rand() % possibilities;
             int choice = low[system];
@@ -346,12 +346,12 @@ void GalaxyView::RandomizeCommodity()
                 ++choice;
             }
             --quota[choice];
-            
+
             // Record our choice.
             bin[system] = choice;
             int newLow = low[system] = choice;
             int newHigh = high[system] = choice + 1;
-            
+
             // Starting from this star, trace outwards system by system. Each
             // neighboring system must be within 1 of this star's level; each
             // system neighboring those, within 2, and so on.
@@ -362,9 +362,9 @@ void GalaxyView::RandomizeCommodity()
                 // For each step outward, expand the allowable range.
                 --newLow;
                 ++newHigh;
-                
+
                 vector<const System *> next;
-                
+
                 // Check if any systems adjacent to any of the sources must be
                 // updated.
                 for(const System *source : sources)
@@ -375,17 +375,17 @@ void GalaxyView::RandomizeCommodity()
                             continue;
                         const System *link = &it->second;
                         done.insert(link);
-                        
+
                         // No need to go further if this system is already at
                         // least as constrained as the new constraints.
                         if(low[link] >= newLow && high[link] <= newHigh)
                             continue;
-                        
+
                         low[link] = max(low[link], newLow);
                         high[link] = min(high[link], newHigh);
                         next.push_back(link);
                     }
-                
+
                 // Now, visit neighbors of those neighbors.
                 next.swap(sources);
             }
@@ -393,12 +393,12 @@ void GalaxyView::RandomizeCommodity()
         if(unassigned.empty())
             break;
     }
-    
+
     // Assign each star system a value based on its bin.
     map<const System *, int> rough;
     for(const auto &it : bin)
         rough[it.first] = base + (rand() % 100) + 100 * it.second;
-    
+
     // Smooth out the values by averaging each system with the average of all
     // its neighbors.
     for(System *system : connected)
