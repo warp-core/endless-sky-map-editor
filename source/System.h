@@ -88,6 +88,9 @@ public:
     std::vector<PeriodicEvent> &Fleets();
     const std::vector<PeriodicEvent> &Fleets() const;
 
+    std::vector<PeriodicEvent> &Hazards();
+    const std::vector<PeriodicEvent> &Hazards() const;
+
     // Position the planets, etc.
     void SetDay(double day);
 
@@ -144,6 +147,7 @@ private:
     std::vector<Minable> minables;
     std::map<QString, int> trade;
     std::vector<PeriodicEvent> fleets;
+    std::vector<PeriodicEvent> hazards;
     double belt;
 
     std::list<DataNode> unparsed;
