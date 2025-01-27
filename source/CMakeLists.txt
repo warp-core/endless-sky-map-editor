@@ -36,6 +36,7 @@ target_sources(EndlessSkyEditor PRIVATE
 	Map.cpp
 	Map.h
 	pi.h
+	PeriodicEvent.h
 	Planet.cpp
 	Planet.h
 	PlanetView.cpp
