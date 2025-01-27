@@ -88,6 +88,14 @@ DetailView::DetailView(Map &mapData, GalaxyView *galaxyView, QWidget *parent) :
     minables->setColumnWidth(2, 70);
     layout->addWidget(minables);
 
+    hazards = new QTreeWidget(this);
+    hazards->setIndentation(0);
+    hazards->setColumnCount(2);
+    hazards->setHeaderLabels({"Hazard Name", "Period"});
+    hazards->setColumnWidth(0, 200);
+    hazards->setColumnWidth(1, 80);
+    layout->addWidget(hazards);
+
 
     setLayout(layout);
 }
@@ -120,6 +128,7 @@ void DetailView::SetSystem(System *system)
         UpdateCommodities();
         UpdateFleets();
         UpdateMinables();
+        UpdateHazards();
     }
     else
     {
@@ -130,6 +139,7 @@ void DetailView::SetSystem(System *system)
         tradeWidget->clear();
         fleets->clear();
         minables->clear();
+        hazards->clear();
     }
     update();
 }
@@ -355,6 +365,30 @@ void DetailView::MinablesChanged(QTreeWidgetItem *item, int column)
 
 
 
+void DetailView::HazardChanged(QTreeWidgetItem *item, int column)
+{
+    if(!system)
+        return;
+
+    unsigned row = item->text(2).toInt();
+    if(row == system->Hazards().size())
+        system->Hazards().emplace_back(item->text(0), item->text(1).toInt());
+    else if(item->text(0).isEmpty() && item->text(1).isEmpty())
+        system->Hazards().erase(system->Hazards().begin() + row);
+    else if(column == 0)
+        system->Hazards()[row].name = item->text(0);
+    else if(column == 1)
+        system->Hazards()[row].period = item->text(1).toInt();
+    else
+        return;
+
+    mapData.SetChanged();
+
+    UpdateHazards();
+}
+
+
+
 void DetailView::UpdateFleets()
 {
     if(!system || !fleets)
@@ -383,4 +417,36 @@ void DetailView::UpdateFleets()
     fleets->setColumnWidth(0, 200);
     connect(fleets, SIGNAL(itemChanged(QTreeWidgetItem *, int)),
         this, SLOT(FleetChanged(QTreeWidgetItem *, int)));
+}
+
+
+
+void DetailView::UpdateHazards()
+{
+    if(!system || !hazards)
+        return;
+
+    disconnect(hazards, SIGNAL(itemChanged(QTreeWidgetItem *, int)),
+        this, SLOT(HazardChanged(QTreeWidgetItem *, int)));
+    hazards->clear();
+
+    for(const PeriodicEvent &hazard : system->Hazards())
+    {
+        QTreeWidgetItem *item = new QTreeWidgetItem(hazards);
+        item->setText(0, hazard.name);
+        item->setText(1, QString::number(hazard.period));
+        item->setText(2, QString::number(&hazard - &system->Hazards().front()));
+        item->setFlags(item->flags() | Qt::ItemIsEditable);
+        fleets->addTopLevelItem(item);
+    }
+    {
+        // Add one last item, which is empty, but can be edited to add a row.
+        QTreeWidgetItem *item = new QTreeWidgetItem(hazards);
+        item->setFlags(item->flags() | Qt::ItemIsEditable);
+        item->setText(2, QString::number(system->Hazards().size()));
+        hazards->addTopLevelItem(item);
+    }
+    hazards->setColumnWidth(0, 200);
+    connect(hazards, SIGNAL(itemChanged(QTreeWidgetItem *, int)),
+        this, SLOT(HazardChanged(QTreeWidgetItem *, int)));
 }

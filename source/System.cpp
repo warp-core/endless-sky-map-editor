@@ -77,6 +77,8 @@ void System::Load(const DataNode &node)
             fleets.emplace_back(child.Token(1), static_cast<int>(child.Value(2)));
         else if(child.Token(0) == "minables" && child.Size() >= 3)
             minables.emplace_back(child.Token(1), static_cast<int>(child.Value(2)), child.Value(3));
+        else if(child.Token(0) == "hazard" && child.Size() >= 3)
+            hazards.emplace_back(child.Token(1), static_cast<int>(child.Value(2)));
         else if(child.Token(0) == "object")
             LoadObject(child);
         else
@@ -115,6 +117,9 @@ void System::Save(DataWriter &file) const
         for(const PeriodicEvent &it : fleets)
             if(!it.name.isEmpty() && it.period)
                 file.Write("fleet", it.name, it.period);
+        for(const PeriodicEvent &it : hazards)
+            if(!it.name.isEmpty() && it.period)
+                file.Write("hazard", it.name, it.period);
         for(const DataNode &node : unparsed)
             file.Write(node);
         for(const StellarObject &object : objects)
@@ -284,6 +289,20 @@ vector<PeriodicEvent> &System::Fleets()
 const vector<PeriodicEvent> &System::Fleets() const
 {
     return fleets;
+}
+
+
+
+vector<PeriodicEvent> &System::Hazards()
+{
+    return hazards;
+}
+
+
+
+const vector<PeriodicEvent> &System::Hazards() const
+{
+    return hazards;
 }
 
 
