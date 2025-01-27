@@ -58,6 +58,24 @@ void System::Load(const DataNode &node)
             position = QVector2D(child.Value(1), child.Value(2));
         else if(child.Token(0) == "government" && child.Size() >= 2)
             government = child.Token(1);
+        else if(child.Token(0) == "ramscoop" && child.HasChildren())
+        {
+            for(const auto &grand : child)
+            {
+                bool hasValue = grand.Size() >= 2;
+                if(grand.Token(0) == "addend" && hasValue)
+                    ramscoopAddend = grand.Value(1);
+                else if(grand.Token(0) == "multiplier" && hasValue)
+                    ramscoopMultiplier = grand.Value(1);
+                else if(grand.Token(0) == "universal" && hasValue)
+                {
+                    const QString &value = grand.Token(1);
+                    ramscoopUniversal = (value == "true" || value == "1");
+                }
+                else
+                    ramscoopUnparsed.emplace_back(grand);
+            }
+        }
         else if(child.Token(0) == "habitable" && child.Size() >= 2)
             habitable = child.Value(1);
         else if(child.Token(0) == "belt" && child.Size() >= 2)
@@ -97,6 +115,22 @@ void System::Save(DataWriter &file) const
             file.Write("display name", *displayName);
         if(!government.isEmpty())
             file.Write("government", government);
+        if(!ramscoopUniversal || ramscoopAddend || ramscoopMultiplier != 1. || !ramscoopUnparsed.empty())
+        {
+            file.Write("ramscoop");
+            file.BeginChild();
+            {
+                if(!ramscoopUniversal)
+                    file.Write("universal", "0");
+                if(ramscoopAddend)
+                    file.Write("addend", ramscoopAddend);
+                if(ramscoopMultiplier != 1.)
+                    file.Write("multiplier", ramscoopMultiplier);
+                for(const auto &it : ramscoopUnparsed)
+                    file.Write(it);
+            }
+            file.EndChild();
+        }
         if(!std::isnan(habitable))
             file.Write("habitable", habitable);
         if(!std::isnan(belt))
@@ -237,6 +271,27 @@ double System::StarRadius() const
         radius = max(radius, other.Distance() + other.Radius());
     }
     return radius;
+}
+
+
+
+bool System::HasRamscoopUniversal() const
+{
+    return ramscoopUniversal;
+}
+
+
+
+double System::RamscoopAddend() const
+{
+    return ramscoopAddend;
+}
+
+
+
+double System::RamscoopMultiplier() const
+{
+    return ramscoopMultiplier;
 }
 
 
@@ -389,6 +444,27 @@ void System::ChangeLink(const QString &from, const QString &to)
 void System::SetTrade(const QString &commodity, int value)
 {
     trade[commodity] = value;
+}
+
+
+
+void System::ToggleRamscoopUniversal()
+{
+    ramscoopUniversal = !ramscoopUniversal;
+}
+
+
+
+void System::SetRamscoopAddend(double value)
+{
+    ramscoopAddend = value;
+}
+
+
+
+void System::SetRamscoopMultiplier(double value)
+{
+    ramscoopMultiplier = value;
 }
 
 

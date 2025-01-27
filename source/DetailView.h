@@ -50,6 +50,9 @@ public slots:
     void UseDisplayNameChanged();
     void DisplayNameChanged();
     void GovernmentChanged();
+    void RamscoopUniversalClicked();
+    void RamscoopAddendChanged();
+    void RamscoopMultiplierChanged();
     void CommodityClicked(QTreeWidgetItem *item, int column);
     void CommodityChanged(int value);
     void FleetChanged(QTreeWidgetItem *item, int column);
@@ -70,6 +73,10 @@ private:
     QCheckBox *useDisplayName = nullptr;
     QLineEdit *displayName = nullptr;
     QLineEdit *government = nullptr;
+
+    QCheckBox *ramscoopUniversal = nullptr;
+    QLineEdit *ramscoopAddend = nullptr;
+    QLineEdit *ramscoopMultiplier = nullptr;
 
     QTreeWidget *tradeWidget = nullptr;
     std::map<QObject *, QTreeWidgetItem *> spinMap;
