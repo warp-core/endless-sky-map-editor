@@ -112,7 +112,7 @@ void System::Save(DataWriter &file) const
             file.Write("minables", it.type, it.count, it.energy);
         for(const auto &it : trade)
             file.Write("trade", it.first, it.second);
-        for(const Fleet &it : fleets)
+        for(const PeriodicEvent &it : fleets)
             if(!it.name.isEmpty() && it.period)
                 file.Write("fleet", it.name, it.period);
         for(const DataNode &node : unparsed)
@@ -274,14 +274,14 @@ int System::Trade(const QString &commodity) const
 
 
 // Get the probabilities of various fleets entering this system.
-vector<System::Fleet> &System::Fleets()
+vector<PeriodicEvent> &System::Fleets()
 {
     return fleets;
 }
 
 
 
-const vector<System::Fleet> &System::Fleets() const
+const vector<PeriodicEvent> &System::Fleets() const
 {
     return fleets;
 }
