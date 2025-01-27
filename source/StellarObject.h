@@ -14,9 +14,12 @@ PARTICULAR PURPOSE.  See the GNU General Public License for more details.
 #define STELLAR_OBJECT_H_
 
 #include "DataNode.h"
+#include "PeriodicEvent.h"
 
 #include <QVector2D>
 #include <QString>
+
+#include <vector>
 
 
 
@@ -93,6 +96,8 @@ private:
     double period = 0.;
     double offset = 0.;
     int parent = -1;
+
+    std::vector<PeriodicEvent> hazards;
 
     std::list<DataNode> unparsed;
 
