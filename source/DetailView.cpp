@@ -364,7 +364,7 @@ void DetailView::UpdateFleets()
         this, SLOT(FleetChanged(QTreeWidgetItem *, int)));
     fleets->clear();
 
-    for(const System::Fleet &fleet : system->Fleets())
+    for(const PeriodicEvent &fleet : system->Fleets())
     {
         QTreeWidgetItem *item = new QTreeWidgetItem(fleets);
         item->setText(0, fleet.name);

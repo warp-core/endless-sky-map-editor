@@ -13,6 +13,7 @@ PARTICULAR PURPOSE.  See the GNU General Public License for more details.
 #ifndef SYSTEM_H_
 #define SYSTEM_H_
 
+#include "PeriodicEvent.h"
 #include "StellarObject.h"
 
 #include <QVector2D>
@@ -38,10 +39,6 @@ public:
     struct Asteroid {
         QString type; int count; double energy;
         Asteroid(const QString &type, int count, double energy) : type(type), count(count), energy(energy) {}
-    };
-    struct Fleet {
-        QString name; int period;
-        Fleet(const QString &name, int period) : name(name), period(period) {}
     };
     struct Minable {
         QString type; int count; double energy;
@@ -88,8 +85,8 @@ public:
     int Trade(const QString &commodity) const;
 
     // Get the probabilities of various fleets entering this system.
-    std::vector<Fleet> &Fleets();
-    const std::vector<Fleet> &Fleets() const;
+    std::vector<PeriodicEvent> &Fleets();
+    const std::vector<PeriodicEvent> &Fleets() const;
 
     // Position the planets, etc.
     void SetDay(double day);
@@ -145,7 +142,7 @@ private:
 
     std::vector<Asteroid> asteroids;
     std::map<QString, int> trade;
-    std::vector<Fleet> fleets;
+    std::vector<PeriodicEvent> fleets;
     std::vector<Minable> minables;
     double belt;
 
