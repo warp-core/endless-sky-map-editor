@@ -70,6 +70,10 @@ public:
     double OccupiedRadius() const;
     double StarRadius() const;
 
+    bool HasRamscoopUniversal() const;
+    double RamscoopAddend() const;
+    double RamscoopMultiplier() const;
+
     const std::vector<Asteroid> &Asteroids() const;
     std::vector<Minable> &Minables();
     const std::vector<Minable> &Minables() const;
@@ -94,6 +98,10 @@ public:
     void ToggleLink(System *other);
     void ChangeLink(const QString &from, const QString &to);
     void SetTrade(const QString &commodity, int value);
+
+    void ToggleRamscoopUniversal();
+    void SetRamscoopAddend(double value);
+    void SetRamscoopMultiplier(double value);
 
     // Editing the stellar objects and their locations:
     void Move(StellarObject *object, double dDistance, double dAngle = 0.);
@@ -131,6 +139,11 @@ private:
     std::vector<StellarObject> objects;
 
     double habitable;
+
+    bool ramscoopUniversal = true;
+    double ramscoopAddend = 0.;
+    double ramscoopMultiplier = 1.;
+
     QString haze;
     QString music;
 
@@ -142,6 +155,7 @@ private:
     double belt;
 
     std::list<DataNode> unparsed;
+    std::list<DataNode> ramscoopUnparsed;
 
     // Keep track of the current time step.
     double timeStep;

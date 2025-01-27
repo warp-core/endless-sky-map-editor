@@ -28,6 +28,13 @@ PARTICULAR PURPOSE.  See the GNU General Public License for more details.
 
 using namespace std;
 
+namespace {
+    double GetOptionalValue(const QString &text)
+    {
+        return text.isEmpty() ? numeric_limits<double>::quiet_NaN() : text.toDouble();
+    }
+}
+
 
 
 DetailView::DetailView(Map &mapData, GalaxyView *galaxyView, QWidget *parent) :
@@ -61,6 +68,24 @@ DetailView::DetailView(Map &mapData, GalaxyView *galaxyView, QWidget *parent) :
     // Selecting the government field changes the system and link colors on the Galaxy map.
     government->installEventFilter(this);
     layout->addLayout(governmentRow);
+
+
+    QGridLayout *ramscoopLayout = new QGridLayout(this);
+    ramscoopLayout->addWidget(new QLabel("Ramscoop:", this), 0, 0);
+    ramscoopUniversal = new QCheckBox("Universal", this);
+    connect(ramscoopUniversal, SIGNAL(clicked()), this, SLOT(RamscoopUniversalClicked()));
+    ramscoopLayout->addWidget(ramscoopUniversal, 1, 0);
+    ramscoopLayout->addWidget(new QLabel("Addend:", this), 0, 1);
+    ramscoopAddend = new QLineEdit(this);
+    ramscoopAddend->setValidator(new QRegularExpressionValidator(QRegularExpression("-?\\d*\\.?\\d*"), ramscoopAddend));
+    connect(ramscoopAddend, SIGNAL(editingFinished()), this, SLOT(RamscoopAddendChanged()));
+    ramscoopLayout->addWidget(ramscoopAddend, 0, 2);
+    ramscoopLayout->addWidget(new QLabel("Multiplier:", this), 1, 1);
+    ramscoopMultiplier = new QLineEdit(this);
+    ramscoopMultiplier->setValidator(new QRegularExpressionValidator(QRegularExpression("-?\\d*\\.?\\d*"), ramscoopMultiplier));
+    connect(ramscoopMultiplier, SIGNAL(editingFinished()), this, SLOT(RamscoopMultiplierChanged()));
+    ramscoopLayout->addWidget(ramscoopMultiplier, 1, 2);
+    layout->addLayout(ramscoopLayout);
 
 
     // Add a table to display this system's default trade.
@@ -132,6 +157,11 @@ void DetailView::SetSystem(System *system)
         }
         government->setText(system->Government());
         
+
+        ramscoopUniversal->setChecked(system->HasRamscoopUniversal());
+        ramscoopAddend->setText(QString::number(system->RamscoopAddend()));
+        ramscoopMultiplier->setText(QString::number(system->RamscoopMultiplier()));
+
         UpdateCommodities();
         UpdateFleets();
         UpdateMinables();
@@ -142,6 +172,10 @@ void DetailView::SetSystem(System *system)
         trueName->clear();
         displayName->clear();
         government->clear();
+
+        ramscoopUniversal->setChecked(true);
+        ramscoopAddend->setText("0");
+        ramscoopMultiplier->setText("1");
 
         tradeWidget->clear();
         fleets->clear();
@@ -294,6 +328,39 @@ void DetailView::GovernmentChanged()
 
     // Refresh the Galaxy map since it is using a new Government color.
     galaxyView->update();
+}
+
+
+
+void DetailView::RamscoopUniversalClicked()
+{
+    if(!system)
+        return;
+
+    system->ToggleRamscoopUniversal();
+    mapData.SetChanged();
+}
+
+
+
+void DetailView::RamscoopAddendChanged()
+{
+    if(!system)
+        return;
+
+    system->SetRamscoopAddend(GetOptionalValue(ramscoopAddend->text()));
+    mapData.SetChanged();
+}
+
+
+
+void DetailView::RamscoopMultiplierChanged()
+{
+    if(!system)
+        return;
+
+    system->SetRamscoopMultiplier(GetOptionalValue(ramscoopMultiplier->text()));
+    mapData.SetChanged();
 }
 
 
