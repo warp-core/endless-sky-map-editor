@@ -141,9 +141,9 @@ private:
     QString music;
 
     std::vector<Asteroid> asteroids;
+    std::vector<Minable> minables;
     std::map<QString, int> trade;
     std::vector<PeriodicEvent> fleets;
-    std::vector<Minable> minables;
     double belt;
 
     std::list<DataNode> unparsed;
