@@ -156,7 +156,7 @@ void DetailView::SetSystem(System *system)
             displayName->setReadOnly(true);
         }
         government->setText(system->Government());
-        
+
 
         ramscoopUniversal->setChecked(system->HasRamscoopUniversal());
         ramscoopAddend->setText(QString::number(system->RamscoopAddend()));
@@ -227,7 +227,7 @@ void DetailView::UpdateCommodities()
     QString current;
     if(tradeWidget && tradeWidget->currentItem())
         current = tradeWidget->currentItem()->text(0);
-    
+
     spinMap.clear();
     tradeWidget->clear();
     tradeWidget->setColumnWidth(1, 70);
@@ -247,7 +247,7 @@ void DetailView::UpdateCommodities()
         connect(spin, SIGNAL(valueChanged(int)), this, SLOT(CommodityChanged(int)));
         tradeWidget->insertTopLevelItem(tradeWidget->topLevelItemCount(), item);
         tradeWidget->setItemWidget(item, 1, spin);
-        
+
         if(it.name == current)
             tradeWidget->setCurrentItem(item, 0);
     }

@@ -567,7 +567,7 @@ void System::ChangeMinables()
     // First, change the belt radius.
     belt = rand() % 1000 + 1000;
     minables.clear();
-    
+
     // Next, figure out the quantity and energy of the ordinary asteroids.
     int totalCount = 0;
     double totalEnergy = 0.;
@@ -576,15 +576,15 @@ void System::ChangeMinables()
         totalCount += asteroid.count;
         totalEnergy += asteroid.energy * asteroid.count;
     }
-    
+
     // Do not auto-create systems with only minable asteroids.
     if(!totalCount)
         return;
-    
+
     double meanEnergy = totalEnergy / totalCount;
     // Minables are much less common than ordinary asteroids.
     totalCount /= 4;
-    
+
     map<QString, double> probability = {
         {"aluminum",  12},
         {"copper",  8},
@@ -606,7 +606,7 @@ void System::ChangeMinables()
         totalCount = rand() % (totalCount + 1);
         if(!totalCount)
             break;
-        
+
         int choice = rand() % 100;
         for(const auto &it : probability)
         {
