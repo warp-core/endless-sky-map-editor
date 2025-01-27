@@ -36,24 +36,31 @@ DetailView::DetailView(Map &mapData, GalaxyView *galaxyView, QWidget *parent) :
     // Create the left sidebar, showing details about the selected system.
     QVBoxLayout *layout = new QVBoxLayout(this);
 
-    layout->addWidget(new QLabel("System Name:", this));
+    QHBoxLayout *trueNameRow = new QHBoxLayout(this);
+    trueNameRow->addWidget(new QLabel("System Name:", this));
     trueName = new QLineEdit(this);
     connect(trueName, SIGNAL(textChanged(const QString &)), this, SLOT(TrueNameEdited()));
     connect(trueName, SIGNAL(editingFinished()), this, SLOT(TrueNameChanged()));
-    layout->addWidget(trueName);
+    trueNameRow->addWidget(trueName);
+    layout->addLayout(trueNameRow);
+
+    QHBoxLayout *displayNameRow = new QHBoxLayout(this);
     useDisplayName = new QCheckBox("Display name:", this);
     connect(useDisplayName, SIGNAL(clicked()), this, SLOT(UseDisplayNameChanged()));
-    layout->addWidget(useDisplayName);
+    displayNameRow->addWidget(useDisplayName);
     displayName = new QLineEdit(this);
     connect(displayName, SIGNAL(editingFinished()), this, SLOT(DisplayNameChanged()));
-    layout->addWidget(displayName);
+    displayNameRow->addWidget(displayName);
+    layout->addLayout(displayNameRow);
 
-    layout->addWidget(new QLabel("Government:", this));
+    QHBoxLayout *governmentRow = new QHBoxLayout(this);
+    governmentRow->addWidget(new QLabel("Government:", this));
     government = new QLineEdit(this);
     connect(government, SIGNAL(editingFinished()), this, SLOT(GovernmentChanged()));
-    layout->addWidget(government);
+    governmentRow->addWidget(government);
     // Selecting the government field changes the system and link colors on the Galaxy map.
     government->installEventFilter(this);
+    layout->addLayout(governmentRow);
 
 
     // Add a table to display this system's default trade.
