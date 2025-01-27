@@ -41,7 +41,6 @@ namespace {
 
 
 
-// Load a system's description.
 void System::Load(const DataNode &node)
 {
     if(node.Size() < 2)
@@ -130,7 +129,6 @@ void System::Save(DataWriter &file) const
 
 
 
-// Get this system's name and position (in the star map).
 const QString &System::TrueName() const
 {
     return trueName;
@@ -159,7 +157,6 @@ const QVector2D &System::Position() const
 
 
 
-// Get this system's government.
 const QString &System::Government() const
 {
     return government;
@@ -167,7 +164,6 @@ const QString &System::Government() const
 
 
 
-// Get a list of systems you can travel to through hyperspace from here.
 const set<QString> &System::Links() const
 {
     return links;
@@ -175,7 +171,6 @@ const set<QString> &System::Links() const
 
 
 
-// Get the stellar object locations on the most recently set date.
 vector<StellarObject> &System::Objects()
 {
     return objects;
@@ -183,7 +178,6 @@ vector<StellarObject> &System::Objects()
 
 
 
-// Get the stellar object locations on the most recently set date.
 const vector<StellarObject> &System::Objects() const
 {
     return objects;
@@ -247,7 +241,6 @@ double System::StarRadius() const
 
 
 
-// Get the specification of how many asteroids of each type there are.
 const vector<System::Asteroid> &System::Asteroids() const
 {
     return asteroids;
@@ -269,7 +262,6 @@ const vector<System::Minable> &System::Minables() const
 
 
 
-// Get the price of the given commodity in this system.
 int System::Trade(const QString &commodity) const
 {
     auto it = trade.find(commodity);
@@ -278,7 +270,6 @@ int System::Trade(const QString &commodity) const
 
 
 
-// Get the probabilities of various fleets entering this system.
 vector<PeriodicEvent> &System::Fleets()
 {
     return fleets;
@@ -327,69 +318,6 @@ void System::SetDay(double day)
 
 
 
-void System::LoadObject(const DataNode &node, int parent)
-{
-    int index = static_cast<int>(objects.size());
-
-    objects.emplace_back(parent);
-    StellarObject &object = objects.back();
-
-    if(node.Size() >= 2)
-        object.planet = node.Token(1);
-
-    for(const DataNode &child : node)
-    {
-        if(child.Token(0) == "sprite" && child.Size() >= 2)
-            object.sprite = child.Token(1);
-        else if(child.Token(0) == "distance" && child.Size() >= 2)
-            object.distance = child.Value(1);
-        else if(child.Token(0) == "period" && child.Size() >= 2)
-            object.period = child.Value(1);
-        else if(child.Token(0) == "offset" && child.Size() >= 2)
-            object.offset = child.Value(1);
-        else if(child.Token(0) == "object")
-            LoadObject(child, index);
-        else
-            object.unparsed.push_back(child);
-    }
-}
-
-
-
-void System::SaveObject(DataWriter &file, const StellarObject &object) const
-{
-    int level = 0;
-    int parent = object.parent;
-    while(parent >= 0)
-    {
-        file.BeginChild();
-        ++level;
-        parent = objects[parent].parent;
-    }
-    if(!object.planet.isEmpty())
-        file.Write("object", object.planet);
-    else
-        file.Write("object");
-    file.BeginChild();
-    {
-        if(!object.sprite.isEmpty())
-            file.Write("sprite", object.sprite);
-        if(object.distance)
-            file.Write("distance", object.distance);
-        if(object.period)
-            file.Write("period", object.period);
-        if(object.offset)
-            file.Write("offset", object.offset);
-        for(const DataNode &node : unparsed)
-            file.Write(node);
-    }
-    file.EndChild();
-    while(level--)
-        file.EndChild();
-}
-
-
-
 void System::Init(const QString &name, const QVector2D &position)
 {
     trueName = name;
@@ -431,7 +359,6 @@ void System::SetGovernment(const QString &gov)
 
 
 
-// Either create or destroy a linking set with the pointed System.
 void System::ToggleLink(System *other)
 {
     if(!other || other == this)
@@ -939,6 +866,69 @@ void System::Delete(StellarObject *object)
     for( ; it != objects.end(); ++it)
         if(it->parent >= 0)
             it->parent -= parentShift;
+}
+
+
+
+void System::LoadObject(const DataNode &node, int parent)
+{
+    int index = static_cast<int>(objects.size());
+
+    objects.emplace_back(parent);
+    StellarObject &object = objects.back();
+
+    if(node.Size() >= 2)
+        object.planet = node.Token(1);
+
+    for(const DataNode &child : node)
+    {
+        if(child.Token(0) == "sprite" && child.Size() >= 2)
+            object.sprite = child.Token(1);
+        else if(child.Token(0) == "distance" && child.Size() >= 2)
+            object.distance = child.Value(1);
+        else if(child.Token(0) == "period" && child.Size() >= 2)
+            object.period = child.Value(1);
+        else if(child.Token(0) == "offset" && child.Size() >= 2)
+            object.offset = child.Value(1);
+        else if(child.Token(0) == "object")
+            LoadObject(child, index);
+        else
+            object.unparsed.push_back(child);
+    }
+}
+
+
+
+void System::SaveObject(DataWriter &file, const StellarObject &object) const
+{
+    int level = 0;
+    int parent = object.parent;
+    while(parent >= 0)
+    {
+        file.BeginChild();
+        ++level;
+        parent = objects[parent].parent;
+    }
+    if(!object.planet.isEmpty())
+        file.Write("object", object.planet);
+    else
+        file.Write("object");
+    file.BeginChild();
+    {
+        if(!object.sprite.isEmpty())
+            file.Write("sprite", object.sprite);
+        if(object.distance)
+            file.Write("distance", object.distance);
+        if(object.period)
+            file.Write("period", object.period);
+        if(object.offset)
+            file.Write("offset", object.offset);
+        for(const DataNode &node : unparsed)
+            file.Write(node);
+    }
+    file.EndChild();
+    while(level--)
+        file.EndChild();
 }
 
 

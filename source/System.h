@@ -47,24 +47,20 @@ public:
 
 
 public:
-    // Load a system's description.
     void Load(const DataNode &node);
     void Save(DataWriter &file) const;
 
-    // Get this system's name and position (in the star map).
     const QString &TrueName() const;
     bool HasDisplayName() const;
     const QString &DisplayName() const;
     const QVector2D &Position() const;
-    // Get this system's government.
     const QString &Government() const;
 
-    // Get a list of systems you can travel to through hyperspace from here.
     const std::set<QString> &Links() const;
 
-    // Get the stellar object locations on the most recently set date.
     std::vector<StellarObject> &Objects();
     const std::vector<StellarObject> &Objects() const;
+
     // Get the habitable zone's center.
     double HabitableZone() const;
     // Get the radius of the zone occupied by the given stellar object. This
@@ -74,17 +70,12 @@ public:
     double OccupiedRadius() const;
     double StarRadius() const;
 
-    // Get the specification of how many asteroids of each type there are.
     const std::vector<Asteroid> &Asteroids() const;
-
-    // Get the specification of how many minables of each type there are.
     std::vector<Minable> &Minables();
     const std::vector<Minable> &Minables() const;
 
-    // Get the price of the given commodity in this system.
     int Trade(const QString &commodity) const;
 
-    // Get the probabilities of various fleets entering this system.
     std::vector<PeriodicEvent> &Fleets();
     const std::vector<PeriodicEvent> &Fleets() const;
 
@@ -120,18 +111,17 @@ private:
     void LoadObject(const DataNode &node, int parent = -1);
     void SaveObject(DataWriter &file, const StellarObject &object) const;
     void Recompute(StellarObject &object, bool updateOffset = true);
+
     // Get a list of all sprites that are in use already.
     std::set<QString> Used() const;
 
 
 private:
-    // Name and position (within the star map) of this system.
     QString trueName;
     std::optional<QString> displayName;
     QVector2D position;
     QString government;
 
-    // Hyperspace links to other systems.
     std::set<QString> links;
 
     // Stellar objects, listed in such an order that an object's parents are
@@ -139,6 +129,7 @@ private:
     // order, updating positions, an object's parents will already be at the
     // proper position before that object is updated).
     std::vector<StellarObject> objects;
+
     double habitable;
     QString haze;
     QString music;
