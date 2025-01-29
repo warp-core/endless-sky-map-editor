@@ -65,6 +65,10 @@ public:
     const QVector2D &Position() const;
     const QString &Government() const;
 
+    bool Hidden() const;
+    bool Shrouded() const;
+    bool Inaccessible() const;
+
     const std::set<QString> &Links() const;
 
     std::vector<StellarObject> &Objects();
@@ -108,6 +112,9 @@ public:
     void SetDisplayName(const QString &name);
     void SetPosition(const QVector2D &pos);
     void SetGovernment(const QString &gov);
+    void ToggleHidden();
+    void ToggleShrouded();
+    void ToggleInaccessible();
     void ToggleLink(System *other);
     void ChangeLink(const QString &from, const QString &to);
     void SetTrade(const QString &commodity, int value);
@@ -168,6 +175,10 @@ private:
     std::vector<PeriodicEvent> fleets;
     std::vector<PeriodicEvent> hazards;
     double belt;
+
+    bool hidden = false;
+    bool shrouded = false;
+    bool inaccessible = false;
 
     std::vector<RaidFleet> raidFleets;
     bool noRaids = false;

@@ -56,6 +56,12 @@ void System::Load(const DataNode &node)
             displayName = child.Token(1);
         else if(child.Token(0) == "pos" && child.Size() >= 3)
             position = QVector2D(child.Value(1), child.Value(2));
+        else if(child.Token(0) == "hidden")
+            hidden = true;
+        else if(child.Token(0) == "shrouded")
+            shrouded = true;
+        else if(child.Token(0) == "inaccessible")
+            inaccessible = true;
         else if(child.Token(0) == "government" && child.Size() >= 2)
             government = child.Token(1);
         else if(child.Token(0) == "ramscoop" && child.HasChildren())
@@ -110,6 +116,12 @@ void System::Save(DataWriter &file) const
     file.Write("system", trueName);
     file.BeginChild();
     {
+        if(hidden)
+            file.Write("hidden");
+        if(shrouded)
+            file.Write("shrouded");
+        if(inaccessible)
+            file.Write("inaccessible");
         file.Write("pos", position.x(), position.y());
         if(displayName.has_value())
             file.Write("display name", *displayName);
@@ -194,6 +206,27 @@ const QVector2D &System::Position() const
 const QString &System::Government() const
 {
     return government;
+}
+
+
+
+bool System::Hidden() const
+{
+    return hidden;
+}
+
+
+
+bool System::Shrouded() const
+{
+    return shrouded;
+}
+
+
+
+bool System::Inaccessible() const
+{
+    return inaccessible;
 }
 
 
@@ -431,6 +464,27 @@ void System::SetPosition(const QVector2D &pos)
 void System::SetGovernment(const QString &gov)
 {
     government = gov;
+}
+
+
+
+void System::ToggleHidden()
+{
+    hidden = !hidden;
+}
+
+
+
+void System::ToggleShrouded()
+{
+    shrouded = !shrouded;
+}
+
+
+
+void System::ToggleInaccessible()
+{
+    inaccessible = !inaccessible;
 }
 
 
