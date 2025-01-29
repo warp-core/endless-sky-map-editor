@@ -129,6 +129,25 @@ DetailView::DetailView(Map &mapData, GalaxyView *galaxyView, QWidget *parent) :
     layout->addWidget(hazards);
 
 
+    QHBoxLayout *raidsCheckBoxes = new QHBoxLayout(this);
+    raidsDisabled = new QCheckBox("Disable raids", this);
+    connect(raidsDisabled, SIGNAL(clicked()), this, SLOT(RaidsDisabledClicked()));
+    raidsCheckBoxes->addWidget(raidsDisabled);
+    raidsCustom = new QCheckBox("Use custom raid fleets", this);
+    connect(raidsCustom, SIGNAL(clicked()), this, SIGNAL(RaidsCustomClicked()));
+    raidsCheckBoxes->addWidget(raidsCustom);
+    layout->addLayout(raidsCheckBoxes);
+
+    raidFleets = new QTreeWidget(this);
+    raidFleets->setIndentation(0);
+    raidFleets->setColumnCount(3);
+    raidFleets->setHeaderLabels({"Raid fleet name", "Minimum attraction", "Maximum attraction"});
+    raidFleets->setColumnWidth(0, 160);
+    raidFleets->setColumnWidth(1, 60);
+    raidFleets->setColumnWidth(2, 60);
+    layout->addWidget(raidFleets);
+
+
     setLayout(layout);
 }
 
@@ -166,6 +185,9 @@ void DetailView::SetSystem(System *system)
         UpdateFleets();
         UpdateMinables();
         UpdateHazards();
+        raidsDisabled->setChecked(system->RaidsDisabled());
+        raidsCustom->setChecked(!system->RaidsDisabled() && !system->RaidFleets().empty());
+        UpdateRaidFleets();
     }
     else
     {
@@ -181,6 +203,9 @@ void DetailView::SetSystem(System *system)
         fleets->clear();
         minables->clear();
         hazards->clear();
+        raidsDisabled->setChecked(false);
+        raidsCustom->setChecked(false);
+        raidFleets->clear();
     }
     update();
 }
@@ -463,6 +488,64 @@ void DetailView::HazardChanged(QTreeWidgetItem *item, int column)
 
 
 
+void DetailView::RaidsDisabledClicked()
+{
+    if(!system)
+        return;
+
+    system->ToggleRaids();
+
+    bool disableRaids = raidsDisabled->isChecked();
+    raidsCustom->setDisabled(disableRaids);
+    raidsCustom->setChecked(disableRaids);
+    raidsCustom->setCheckable(!disableRaids);
+
+    mapData.SetChanged();
+
+    UpdateRaidFleets();
+}
+
+
+
+void DetailView::RaidsCustomClicked()
+{
+    if(!system)
+        return;
+
+    if(raidsDisabled->isChecked())
+        return;
+
+    UpdateRaidFleets();
+}
+
+
+
+void DetailView::RaidFleetsChanged(QTreeWidgetItem *item, int column)
+{
+    if(!system)
+        return;
+
+    unsigned row = item->text(3).toInt();
+    if(row == system->RaidFleets().size())
+        system->RaidFleets().emplace_back(item->text(0), item->text(1).toInt(), item->text(2).toInt());
+    else if(item->text(0).isEmpty() && item->text(1).isEmpty() && item->text(2).isEmpty())
+        system->RaidFleets().erase(system->RaidFleets().begin() + row);
+    else if(column == 0)
+        system->RaidFleets()[row].fleetName = item->text(0);
+    else if(column == 1)
+        system->RaidFleets()[row].minimumAttraction = item->text(1).toInt();
+    else if(column == 2)
+        system->RaidFleets()[row].maximumAttraction = item->text(2).toInt();
+    else
+        return;
+
+    mapData.SetChanged();
+
+    UpdateRaidFleets();
+}
+
+
+
 void DetailView::UpdateFleets()
 {
     if(!system || !fleets)
@@ -523,4 +606,43 @@ void DetailView::UpdateHazards()
     hazards->setColumnWidth(0, 200);
     connect(hazards, SIGNAL(itemChanged(QTreeWidgetItem *, int)),
         this, SLOT(HazardChanged(QTreeWidgetItem *, int)));
+}
+
+
+
+void DetailView::UpdateRaidFleets()
+{
+    if(!system || !raidFleets)
+        return;
+
+    disconnect(raidFleets, SIGNAL(itemChanged(QTreeWidgetItem *, int)),
+        this, SLOT(RaidFleetsChanged(QTreeWidgetItem *, int)));
+    raidFleets->clear();
+
+    for(const System::RaidFleet &raidFleet : system->RaidFleets())
+    {
+        QTreeWidgetItem *item = new QTreeWidgetItem(raidFleets);
+        item->setText(0, raidFleet.fleetName);
+        item->setText(1, QString::number(raidFleet.minimumAttraction));
+        item->setText(2, QString::number(raidFleet.maximumAttraction));
+        item->setText(3, QString::number(&raidFleet - &system->RaidFleets().front()));
+        if(!raidsDisabled->isChecked() && raidsCustom->isChecked())
+            item->setFlags(item->flags() | Qt::ItemIsEditable);
+        else if(raidsDisabled->isChecked() || !raidsCustom->isChecked())
+            item->setFlags(item->flags() & ~Qt::ItemIsEditable);
+        raidFleets->addTopLevelItem(item);
+    }
+    {
+        // Add one last item, which is empty, but can be edited to add a row.
+        QTreeWidgetItem *item = new QTreeWidgetItem(raidFleets);
+        if(!raidsDisabled->isChecked() && raidsCustom->isChecked())
+            item->setFlags(item->flags() | Qt::ItemIsEditable);
+        else if(raidsDisabled->isChecked() || !raidsCustom->isChecked())
+            item->setFlags(item->flags() & ~Qt::ItemIsEditable);
+        item->setText(3, QString::number(system->RaidFleets().size()));
+        raidFleets->addTopLevelItem(item);
+    }
+    raidFleets->setColumnWidth(0, 160);
+    connect(raidFleets, SIGNAL(itemChanged(QTreeWidgetItem *, int)),
+        this, SLOT(RaidFleetsChanged(QTreeWidgetItem *, int)));
 }
