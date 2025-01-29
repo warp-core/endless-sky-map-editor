@@ -353,6 +353,27 @@ const vector<PeriodicEvent> &System::Hazards() const
 
 
 
+bool System::RaidsDisabled() const
+{
+    return noRaids;
+}
+
+
+
+vector<System::RaidFleet> &System::RaidFleets()
+{
+    return raidFleets;
+}
+
+
+
+const vector<System::RaidFleet> &System::RaidFleets() const
+{
+    return raidFleets;
+}
+
+
+
 // Position the planets, etc.
 void System::SetDay(double day)
 {
@@ -465,6 +486,13 @@ void System::SetRamscoopAddend(double value)
 void System::SetRamscoopMultiplier(double value)
 {
     ramscoopMultiplier = value;
+}
+
+
+
+void System::ToggleRaids()
+{
+    noRaids = !noRaids;
 }
 
 

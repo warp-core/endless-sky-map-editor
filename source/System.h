@@ -44,6 +44,15 @@ public:
         QString type; int count; double energy;
         Minable(const QString &type, int count, double energy) : type(type), count(count), energy(energy) {}
     };
+    struct RaidFleet {
+        RaidFleet(QString fleetName, double minimum, double maximum)
+            : fleetName(fleetName), minimumAttraction(minimum), maximumAttraction(maximum)
+        {
+        }
+        QString fleetName;
+        double minimumAttraction = 2.;
+        double maximumAttraction = 0.;
+    };
 
 
 public:
@@ -86,6 +95,10 @@ public:
     std::vector<PeriodicEvent> &Hazards();
     const std::vector<PeriodicEvent> &Hazards() const;
 
+    bool RaidsDisabled() const;
+    std::vector<RaidFleet> &RaidFleets();
+    const std::vector<RaidFleet> &RaidFleets() const;
+
     // Position the planets, etc.
     void SetDay(double day);
 
@@ -102,6 +115,8 @@ public:
     void ToggleRamscoopUniversal();
     void SetRamscoopAddend(double value);
     void SetRamscoopMultiplier(double value);
+
+    void ToggleRaids();
 
     // Editing the stellar objects and their locations:
     void Move(StellarObject *object, double dDistance, double dAngle = 0.);
@@ -153,6 +168,9 @@ private:
     std::vector<PeriodicEvent> fleets;
     std::vector<PeriodicEvent> hazards;
     double belt;
+
+    std::vector<RaidFleet> raidFleets;
+    bool noRaids = false;
 
     std::list<DataNode> unparsed;
     std::list<DataNode> ramscoopUnparsed;

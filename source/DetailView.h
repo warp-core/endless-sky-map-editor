@@ -58,10 +58,14 @@ public slots:
     void FleetChanged(QTreeWidgetItem *item, int column);
     void MinablesChanged(QTreeWidgetItem *item, int column);
     void HazardChanged(QTreeWidgetItem *item, int column);
+    void RaidsDisabledClicked();
+    void RaidsCustomClicked();
+    void RaidFleetsChanged(QTreeWidgetItem *item, int column);
 
 private:
     void UpdateFleets();
     void UpdateHazards();
+    void UpdateRaidFleets();
 
 
 private:
@@ -83,6 +87,9 @@ private:
     QTreeWidget *fleets = nullptr;
     QTreeWidget *minables = nullptr;
     QTreeWidget *hazards = nullptr;
+    QCheckBox *raidsDisabled = nullptr;
+    QCheckBox *raidsCustom = nullptr;
+    QTreeWidget *raidFleets = nullptr;
 };
 
 
