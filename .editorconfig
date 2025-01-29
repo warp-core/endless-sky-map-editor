@@ -1,0 +1,29 @@
+# https://editorconfig.org/
+root = true
+
+[*]
+end_of_line = lf
+insert_final_newline = true
+trim_trailing_whitespace = true
+
+# Code files
+[*.{cpp,h}]
+indent_style = space
+indent_size = 4
+cpp_space_pointer_reference_alignment = right
+cpp_space_after_keywords_in_control_flow_statements = false
+
+# Markdown
+[*.md]
+trim_trailing_whitespace = false
+
+[*.xml]
+indent_style = space
+indent_size = 2
+
+[*.{yml,yaml}]
+indent_size = 2
+indent_style = space
+
+[*.json]
+indent_style = tab
