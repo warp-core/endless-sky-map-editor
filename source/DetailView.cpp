@@ -43,6 +43,7 @@ DetailView::DetailView(Map &mapData, GalaxyView *galaxyView, QWidget *parent) :
     // Create the left sidebar, showing details about the selected system.
     QVBoxLayout *layout = new QVBoxLayout(this);
 
+
     QHBoxLayout *trueNameRow = new QHBoxLayout(this);
     trueNameRow->addWidget(new QLabel("System Name:", this));
     trueName = new QLineEdit(this);
@@ -120,6 +121,7 @@ DetailView::DetailView(Map &mapData, GalaxyView *galaxyView, QWidget *parent) :
     minables->setColumnWidth(2, 70);
     layout->addWidget(minables);
 
+
     hazards = new QTreeWidget(this);
     hazards->setIndentation(0);
     hazards->setColumnCount(2);
@@ -175,7 +177,6 @@ void DetailView::SetSystem(System *system)
             displayName->setReadOnly(true);
         }
         government->setText(system->Government());
-
 
         ramscoopUniversal->setChecked(system->HasRamscoopUniversal());
         ramscoopAddend->setText(QString::number(system->RamscoopAddend()));
