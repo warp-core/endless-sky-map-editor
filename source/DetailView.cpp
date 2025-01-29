@@ -70,6 +70,18 @@ DetailView::DetailView(Map &mapData, GalaxyView *galaxyView, QWidget *parent) :
     government->installEventFilter(this);
     layout->addLayout(governmentRow);
 
+    QHBoxLayout *visibilityLayout = new QHBoxLayout(this);
+    hidden = new QCheckBox("Hidden", this);
+    connect(hidden, SIGNAL(clicked()), this, SLOT(HiddenClicked()));
+    visibilityLayout->addWidget(hidden);
+    shrouded = new QCheckBox("Shrouded", this);
+    connect(shrouded, SIGNAL(clicked()), this, SLOT(ShroudedClicked()));
+    visibilityLayout->addWidget(shrouded);
+    inaccessible = new QCheckBox("Inaccessible", this);
+    connect(inaccessible, SIGNAL(clicked()), this, SLOT(InaccessibleClicked()));
+    visibilityLayout->addWidget(inaccessible);
+    layout->addLayout(visibilityLayout);
+
 
     QGridLayout *ramscoopLayout = new QGridLayout(this);
     ramscoopLayout->addWidget(new QLabel("Ramscoop:", this), 0, 0);
@@ -178,6 +190,10 @@ void DetailView::SetSystem(System *system)
         }
         government->setText(system->Government());
 
+        hidden->setChecked(system->Hidden());
+        shrouded->setChecked(system->Shrouded());
+        inaccessible->setChecked(system->Inaccessible());
+
         ramscoopUniversal->setChecked(system->HasRamscoopUniversal());
         ramscoopAddend->setText(QString::number(system->RamscoopAddend()));
         ramscoopMultiplier->setText(QString::number(system->RamscoopMultiplier()));
@@ -195,6 +211,10 @@ void DetailView::SetSystem(System *system)
         trueName->clear();
         displayName->clear();
         government->clear();
+
+        hidden->setChecked(false);
+        shrouded->setChecked(false);
+        inaccessible->setChecked(false);
 
         ramscoopUniversal->setChecked(true);
         ramscoopAddend->setText("0");
@@ -354,6 +374,39 @@ void DetailView::GovernmentChanged()
 
     // Refresh the Galaxy map since it is using a new Government color.
     galaxyView->update();
+}
+
+
+
+void DetailView::HiddenClicked()
+{
+    if(!system)
+        return;
+
+    system->ToggleHidden();
+    mapData.SetChanged();
+}
+
+
+
+void DetailView::ShroudedClicked()
+{
+    if(!system)
+        return;
+
+    system->ToggleShrouded();
+    mapData.SetChanged();
+}
+
+
+
+void DetailView::InaccessibleClicked()
+{
+    if(!system)
+        return;
+
+    system->ToggleInaccessible();
+    mapData.SetChanged();
 }
 
 

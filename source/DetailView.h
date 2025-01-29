@@ -50,6 +50,9 @@ public slots:
     void UseDisplayNameChanged();
     void DisplayNameChanged();
     void GovernmentChanged();
+    void HiddenClicked();
+    void ShroudedClicked();
+    void InaccessibleClicked();
     void RamscoopUniversalClicked();
     void RamscoopAddendChanged();
     void RamscoopMultiplierChanged();
@@ -77,6 +80,10 @@ private:
     QCheckBox *useDisplayName = nullptr;
     QLineEdit *displayName = nullptr;
     QLineEdit *government = nullptr;
+
+    QCheckBox *hidden = nullptr;
+    QCheckBox *shrouded = nullptr;
+    QCheckBox *inaccessible = nullptr;
 
     QCheckBox *ramscoopUniversal = nullptr;
     QLineEdit *ramscoopAddend = nullptr;
