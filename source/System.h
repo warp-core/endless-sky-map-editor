@@ -71,6 +71,12 @@ public:
 
     const std::set<QString> &Links() const;
 
+    double JumpRange() const;
+    double HyperArrival() const;
+    double JumpArrival() const;
+    double HyperDeparture() const;
+    double JumpDepature() const;
+
     std::vector<StellarObject> &Objects();
     const std::vector<StellarObject> &Objects() const;
 
@@ -117,6 +123,11 @@ public:
     void ToggleInaccessible();
     void ToggleLink(System *other);
     void ChangeLink(const QString &from, const QString &to);
+    void SetJumpRange(double value);
+    void SetHyperArrival(double value);
+    void SetJumpArrival(double value);
+    void SetHyperDeparture(double value);
+    void SetJumpDeparture(double value);
     void SetTrade(const QString &commodity, int value);
 
     void ToggleRamscoopUniversal();
@@ -153,6 +164,12 @@ private:
     QString government;
 
     std::set<QString> links;
+
+    double jumpRange = 0.;
+    double hyperspaceArrivalDistance = 0.;
+    double hyperspaceDepartureDistance = 0.;
+    double jumpArrivalDistance = 0.;
+    double jumpDepartureDistance = 0.;
 
     // Stellar objects, listed in such an order that an object's parents are
     // guaranteed to appear before it (so that if we traverse the vector in

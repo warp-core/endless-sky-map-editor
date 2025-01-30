@@ -62,6 +62,44 @@ void System::Load(const DataNode &node)
             shrouded = true;
         else if(child.Token(0) == "inaccessible")
             inaccessible = true;
+        else if(child.Token(0) == "jump range" && child.Size() >= 2)
+        {
+            jumpRange = max(0., child.Value(1));
+        }
+        else if(child.Token(0) == "arrival" && (child.Size() >= 2 || child.HasChildren()))
+        {
+            if(child.Size() >= 2)
+            {
+                hyperspaceArrivalDistance = child.Value(1);
+                jumpArrivalDistance = fabs(hyperspaceArrivalDistance);
+            }
+            for(const DataNode &grand : child)
+            {
+                if(grand.Size() < 2)
+                    continue;
+                if(grand.Token(0) == "link")
+                    hyperspaceArrivalDistance = grand.Value(1);
+                else if(grand.Token(0) == "jump")
+                    jumpArrivalDistance = fabs(grand.Value(1));
+            }
+        }
+        else if(child.Token(0) == "departure" && (child.Size() >= 2 || child.HasChildren()))
+        {
+            if(child.Size() >= 2)
+            {
+                hyperspaceDepartureDistance = fabs(child.Value(1));
+                jumpDepartureDistance = hyperspaceArrivalDistance;
+            }
+            for(const DataNode &grand : child)
+            {
+                if(grand.Size() < 2)
+                    continue;
+                if(grand.Token(0) == "link")
+                    hyperspaceDepartureDistance = fabs(grand.Value(1));
+                else if(grand.Token(0) == "jump")
+                    jumpDepartureDistance = fabs(grand.Value(1));
+            }
+        }
         else if(child.Token(0) == "government" && child.Size() >= 2)
             government = child.Token(1);
         else if(child.Token(0) == "ramscoop" && child.HasChildren())
@@ -143,10 +181,46 @@ void System::Save(DataWriter &file) const
             }
             file.EndChild();
         }
+        if(hyperspaceArrivalDistance || jumpArrivalDistance)
+        {
+            if(hyperspaceArrivalDistance == jumpArrivalDistance)
+                file.Write("arrival", hyperspaceArrivalDistance);
+            else
+            {
+                file.Write("arrival");
+                file.BeginChild();
+                {
+                    if(hyperspaceArrivalDistance)
+                        file.Write("link", hyperspaceArrivalDistance);
+                    if(jumpArrivalDistance)
+                        file.Write("jump", jumpArrivalDistance);
+                }
+                file.EndChild();
+            }
+        }
+        if(hyperspaceDepartureDistance || jumpDepartureDistance)
+        {
+            if(hyperspaceDepartureDistance == jumpDepartureDistance)
+                file.Write("departure", hyperspaceDepartureDistance);
+            else
+            {
+                file.Write("departure");
+                file.BeginChild();
+                {
+                    if(hyperspaceDepartureDistance)
+                        file.Write("link", hyperspaceDepartureDistance);
+                    if(jumpDepartureDistance)
+                        file.Write("jump", jumpDepartureDistance);
+                }
+                file.EndChild();
+            }
+        }
         if(!std::isnan(habitable))
             file.Write("habitable", habitable);
         if(!std::isnan(belt))
             file.Write("belt", belt);
+        if(jumpRange && jumpRange != 100.)
+            file.Write("jump range", jumpRange);
         if(!haze.isEmpty())
             file.Write("haze", haze);
         if(!music.isEmpty())
@@ -234,6 +308,41 @@ bool System::Inaccessible() const
 const set<QString> &System::Links() const
 {
     return links;
+}
+
+
+
+double System::JumpRange() const
+{
+    return jumpRange;
+}
+
+
+
+double System::HyperArrival() const
+{
+    return hyperspaceArrivalDistance;
+}
+
+
+
+double System::JumpArrival() const
+{
+    return jumpArrivalDistance;
+}
+
+
+
+double System::HyperDeparture() const
+{
+    return hyperspaceDepartureDistance;
+}
+
+
+
+double System::JumpDepature() const
+{
+    return jumpDepartureDistance;
 }
 
 
@@ -512,6 +621,41 @@ void System::ChangeLink(const QString &from, const QString &to)
 {
     if(links.erase(from) && !to.isEmpty())
         links.emplace(to);
+}
+
+
+
+void System::SetJumpRange(double value)
+{
+    jumpRange = value;
+}
+
+
+
+void System::SetHyperArrival(double value)
+{
+    hyperspaceArrivalDistance = value;
+}
+
+
+
+void System::SetJumpArrival(double value)
+{
+    jumpArrivalDistance = value;
+}
+
+
+
+void System::SetHyperDeparture(double value)
+{
+    hyperspaceDepartureDistance = value;
+}
+
+
+
+void System::SetJumpDeparture(double value)
+{
+    jumpDepartureDistance = value;
 }
 
 

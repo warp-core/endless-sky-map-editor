@@ -82,6 +82,37 @@ DetailView::DetailView(Map &mapData, GalaxyView *galaxyView, QWidget *parent) :
     visibilityLayout->addWidget(inaccessible);
     layout->addLayout(visibilityLayout);
 
+    QGridLayout *interstellarTravelLayout = new QGridLayout(this);
+    interstellarTravelLayout->addWidget(new QLabel("Arrival:", this), 0, 1, 1, 1);
+    interstellarTravelLayout->addWidget(new QLabel("Departure:", this), 0, 2, 1, 1);
+    interstellarTravelLayout->addWidget(new QLabel("Hyperspace:", this), 1, 0, 1, 1);
+    interstellarTravelLayout->addWidget(new QLabel("Jump drive:", this), 2, 0, 1, 1);
+    interstellarTravelLayout->addWidget(new QLabel("Jump range:", this), 3, 1, 1, 1);
+    hyperArrival = new QLineEdit(this);
+    hyperArrival->setValidator(new QRegularExpressionValidator(QRegularExpression("-?\\d*\\.?\\d*"), hyperArrival));
+    connect(hyperArrival, SIGNAL(editingFinished()), this, SLOT(HyperArrivalChanged()));
+    interstellarTravelLayout->addWidget(hyperArrival, 1, 1, 1, 1);
+    jumpArrival = new QLineEdit(this);
+    jumpArrival->setValidator(new QRegularExpressionValidator(QRegularExpression("\\d*\\.?\\d*"), jumpArrival));
+    connect(jumpArrival, SIGNAL(editingFinished()), this, SLOT(JumpArrivalChanged()));
+    interstellarTravelLayout->addWidget(jumpArrival, 2, 1, 1, 1);
+    hyperDeparture = new QLineEdit(this);
+    hyperDeparture->setValidator(new QRegularExpressionValidator(QRegularExpression("\\d*\\.?\\d*"), hyperDeparture));
+    connect(hyperDeparture, SIGNAL(editingFinished()), this, SLOT(HyperDepartureChanged()));
+    interstellarTravelLayout->addWidget(hyperDeparture, 1, 2, 1, 1);
+    jumpDeparture = new QLineEdit(this);
+    jumpDeparture->setValidator(new QRegularExpressionValidator(QRegularExpression("\\d*\\.?\\d*"), jumpDeparture));
+    connect(jumpDeparture, SIGNAL(editingFinished()), this, SLOT(JumpDepartureChanged()));
+    interstellarTravelLayout->addWidget(jumpDeparture, 2, 2, 1, 1);
+    jumpRange = new QLineEdit(this);
+    jumpRange->setValidator(new QRegularExpressionValidator(QRegularExpression("\\d*\\.?\\d*"), jumpRange));
+    connect(jumpRange, SIGNAL(editingFinished()), this, SLOT(JumpRangeChanged()));
+    interstellarTravelLayout->addWidget(jumpRange, 3, 2, 1, 1);
+    arrivalFromHabitable = new QCheckBox("Arrival from habitable", this);
+    connect(arrivalFromHabitable, SIGNAL(clicked()), this, SLOT(ArrivalFromHabitableClicked()));
+    interstellarTravelLayout->addWidget(arrivalFromHabitable, 3, 0, 1, 1);
+    layout->addLayout(interstellarTravelLayout);
+
 
     QGridLayout *ramscoopLayout = new QGridLayout(this);
     ramscoopLayout->addWidget(new QLabel("Ramscoop:", this), 0, 0);
@@ -194,6 +225,28 @@ void DetailView::SetSystem(System *system)
         shrouded->setChecked(system->Shrouded());
         inaccessible->setChecked(system->Inaccessible());
 
+        if((system->HyperArrival() == system->JumpArrival()) && (system->HyperArrival() == system->HabitableZone()))
+        {
+            QString distance = QString::number(system->HabitableZone());
+            arrivalFromHabitable->setChecked(true);
+            hyperArrival->setReadOnly(true);
+            hyperArrival->setText(distance);
+            jumpArrival->setReadOnly(true);
+            jumpArrival->setText(distance);
+        }
+        else
+        {
+            arrivalFromHabitable->setChecked(false);
+            hyperArrival->setReadOnly(false);
+            hyperArrival->setText(QString::number(system->HyperArrival()));
+            jumpArrival->setReadOnly(false);
+            jumpArrival->setText(QString::number(system->JumpArrival()));
+        }
+        hyperDeparture->setText(QString::number(system->HyperDeparture()));
+        jumpDeparture->setText(QString::number(system->JumpDepature()));
+        jumpRange->setText(QString::number(system->JumpRange()));
+        jumpRange->setPlaceholderText("100");
+
         ramscoopUniversal->setChecked(system->HasRamscoopUniversal());
         ramscoopAddend->setText(QString::number(system->RamscoopAddend()));
         ramscoopMultiplier->setText(QString::number(system->RamscoopMultiplier()));
@@ -215,6 +268,13 @@ void DetailView::SetSystem(System *system)
         hidden->setChecked(false);
         shrouded->setChecked(false);
         inaccessible->setChecked(false);
+
+        hyperArrival->clear();
+        jumpArrival->clear();
+        hyperDeparture->clear();
+        jumpDeparture->clear();
+        jumpRange->clear();
+        arrivalFromHabitable->setChecked(false);
 
         ramscoopUniversal->setChecked(true);
         ramscoopAddend->setText("0");
@@ -408,6 +468,89 @@ void DetailView::InaccessibleClicked()
     system->ToggleInaccessible();
     mapData.SetChanged();
 }
+
+
+
+void DetailView::JumpRangeChanged()
+{
+    if(!system)
+        return;
+
+    system->SetJumpRange(jumpRange->text().toDouble());
+    mapData.SetChanged();
+}
+
+
+
+void DetailView::HyperArrivalChanged()
+{
+    if(!system)
+        return;
+
+    system->SetHyperArrival(hyperArrival->text().toDouble());
+    mapData.SetChanged();
+}
+
+
+
+void DetailView::JumpArrivalChanged()
+{
+    if(!system)
+        return;
+
+    system->SetJumpArrival(jumpArrival->text().toDouble());
+    mapData.SetChanged();
+}
+
+
+
+void DetailView::ArrivalFromHabitableClicked()
+{
+    if(!system)
+        return;
+
+    if(arrivalFromHabitable->isChecked())
+    {
+        hyperArrival->setReadOnly(true);
+        hyperArrival->setText(QString::number(system->HabitableZone()));
+        system->SetHyperArrival(system->HabitableZone());
+        jumpArrival->setReadOnly(true);
+        jumpArrival->setText(QString::number(system->HabitableZone()));
+        system->SetJumpArrival(system->HabitableZone());
+    }
+    else
+    {
+        hyperArrival->setReadOnly(false);
+        jumpArrival->setReadOnly(false);
+    }
+
+    mapData.SetChanged();
+}
+
+
+
+void DetailView::HyperDepartureChanged()
+{
+    if(!system)
+        return;
+
+    system->SetHyperDeparture(hyperDeparture->text().toDouble());
+    mapData.SetChanged();
+}
+
+
+
+void DetailView::JumpDepartureChanged()
+{
+    if(!system)
+        return;
+
+    system->SetJumpDeparture(jumpDeparture->text().toDouble());
+    mapData.SetChanged();
+}
+
+
+
 
 
 
