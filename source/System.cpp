@@ -140,6 +140,10 @@ void System::Load(const DataNode &node)
             minables.emplace_back(child.Token(1), static_cast<int>(child.Value(2)), child.Value(3));
         else if(child.Token(0) == "hazard" && child.Size() >= 3)
             hazards.emplace_back(child.Token(1), static_cast<int>(child.Value(2)));
+        else if(child.Token(0) == "invisible fence" && child.Size() >= 2)
+            invisibleFenceRadius = child.Value(1);
+        else if(child.Token(0) == "starfield density" && child.Size() >= 2)
+            starfieldDensity = child.Value(1);
         else if(child.Token(0) == "object")
             LoadObject(child);
         else
@@ -219,6 +223,8 @@ void System::Save(DataWriter &file) const
             file.Write("habitable", habitable);
         if(!std::isnan(belt))
             file.Write("belt", belt);
+        if(invisibleFenceRadius != 10000.)
+            file.Write("invisible fence", invisibleFenceRadius);
         if(jumpRange && jumpRange != 100.)
             file.Write("jump range", jumpRange);
         if(!haze.isEmpty())
@@ -239,6 +245,8 @@ void System::Save(DataWriter &file) const
         for(const PeriodicEvent &it : hazards)
             if(!it.name.isEmpty() && it.period)
                 file.Write("hazard", it.name, it.period);
+        if(starfieldDensity != 1.)
+            file.Write("starfield density", starfieldDensity);
         for(const DataNode &node : unparsed)
             file.Write(node);
         for(const StellarObject &object : objects)
