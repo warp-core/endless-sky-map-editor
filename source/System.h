@@ -44,6 +44,12 @@ public:
         QString type; int count; double energy;
         Minable(const QString &type, int count, double energy) : type(type), count(count), energy(energy) {}
     };
+    struct Belt {
+        Belt(double radius, int weight = 1) : radius(radius), weight(weight) {}
+        Belt() = delete;
+        double radius;
+        int weight;
+    };
     struct RaidFleet {
         RaidFleet(QString fleetName, double minimum, double maximum)
             : fleetName(fleetName), minimumAttraction(minimum), maximumAttraction(maximum)
@@ -194,7 +200,7 @@ private:
     std::map<QString, int> trade;
     std::vector<PeriodicEvent> fleets;
     std::vector<PeriodicEvent> hazards;
-    double belt;
+    std::vector<Belt> belts;;
 
     bool hidden = false;
     bool shrouded = false;

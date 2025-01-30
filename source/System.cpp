@@ -48,7 +48,6 @@ void System::Load(const DataNode &node)
     trueName = node.Token(1);
 
     habitable = numeric_limits<double>::quiet_NaN();
-    belt = numeric_limits<double>::quiet_NaN();
 
     for(const DataNode &child : node)
     {
@@ -126,7 +125,12 @@ void System::Load(const DataNode &node)
         else if(child.Token(0) == "habitable" && child.Size() >= 2)
             habitable = child.Value(1);
         else if(child.Token(0) == "belt" && child.Size() >= 2)
-            belt = child.Value(1);
+        {
+            if(child.Size() >= 3)
+                belts.emplace_back(child.Value(1), child.Value(2));
+            else
+                belts.emplace_back(child.Value(1));
+        }
         else if(child.Token(0) == "haze" && child.Size() >= 2)
             haze = child.Token(1);
         else if(child.Token(0) == "music" && child.Size() >= 2)
@@ -231,8 +235,13 @@ void System::Save(DataWriter &file) const
         }
         if(!std::isnan(habitable))
             file.Write("habitable", habitable);
-        if(!std::isnan(belt))
-            file.Write("belt", belt);
+        for(const Belt &belt : belts)
+        {
+            if(belt.weight == 1)
+                file.Write("belt", belt.radius);
+            else
+                file.Write("belt", belt.radius, belt.weight);
+        }
         if(invisibleFenceRadius != 10000.)
             file.Write("invisible fence", invisibleFenceRadius);
         if(jumpRange && jumpRange != 100.)
@@ -809,7 +818,8 @@ void System::ChangeAsteroids()
 void System::ChangeMinables()
 {
     // First, change the belt radius.
-    belt = rand() % 1000 + 1000;
+    belts.clear();
+    belts.emplace_back(rand() % 1000 + 1000);
     minables.clear();
 
     // Next, figure out the quantity and energy of the ordinary asteroids.
