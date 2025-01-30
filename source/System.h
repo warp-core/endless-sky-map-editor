@@ -163,6 +163,8 @@ private:
     QVector2D position;
     QString government;
 
+    std::set<QString> attributes;
+
     std::set<QString> links;
 
     double jumpRange = 0.;
