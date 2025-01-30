@@ -53,6 +53,12 @@ public slots:
     void HiddenClicked();
     void ShroudedClicked();
     void InaccessibleClicked();
+    void JumpRangeChanged();
+    void HyperArrivalChanged();
+    void JumpArrivalChanged();
+    void ArrivalFromHabitableClicked();
+    void HyperDepartureChanged();
+    void JumpDepartureChanged();
     void RamscoopUniversalClicked();
     void RamscoopAddendChanged();
     void RamscoopMultiplierChanged();
@@ -84,6 +90,13 @@ private:
     QCheckBox *hidden = nullptr;
     QCheckBox *shrouded = nullptr;
     QCheckBox *inaccessible = nullptr;
+
+    QCheckBox *arrivalFromHabitable = nullptr;
+    QLineEdit *hyperArrival = nullptr;
+    QLineEdit *jumpArrival = nullptr;
+    QLineEdit *hyperDeparture = nullptr;
+    QLineEdit *jumpDeparture = nullptr;
+    QLineEdit *jumpRange = nullptr;
 
     QCheckBox *ramscoopUniversal = nullptr;
     QLineEdit *ramscoopAddend = nullptr;
