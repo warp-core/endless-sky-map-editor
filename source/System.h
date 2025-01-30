@@ -184,6 +184,7 @@ private:
     double ramscoopMultiplier = 1.;
 
     QString haze;
+    double starfieldDensity = 1.;
     QString music;
 
     std::vector<Asteroid> asteroids;
@@ -196,6 +197,8 @@ private:
     bool hidden = false;
     bool shrouded = false;
     bool inaccessible = false;
+
+    double invisibleFenceRadius = 10000.;
 
     std::vector<RaidFleet> raidFleets;
     bool noRaids = false;
