@@ -88,6 +88,7 @@ private:
 
 private:
     QString sprite;
+    std::list<DataNode> spriteProperties;
 
     QVector2D position;
     QString planet;
