@@ -153,6 +153,8 @@ public:
     void Randomize(bool allowHabitable, bool requireHabitable);
     void Delete(StellarObject *object);
 
+    void UpdateObjectPointers();
+
 
 private:
     void LoadObject(const DataNode &node, int parent = -1);

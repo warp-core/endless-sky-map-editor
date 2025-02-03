@@ -21,6 +21,8 @@ PARTICULAR PURPOSE.  See the GNU General Public License for more details.
 
 #include <vector>
 
+class System;
+
 
 
 // Class representing a planet, star, moon, or other large object in space. This
@@ -78,6 +80,8 @@ public:
     // city lights).
     bool IsInhabited() const;
 
+    const System *GetSystem() const;
+
     // Editing a stellar object:
     void SetPlanet(const QString &name);
 
@@ -102,6 +106,7 @@ private:
 
     // Let System handle setting all the values of an Object.
     friend class System;
+    const System *system = nullptr;
 };
 
 
