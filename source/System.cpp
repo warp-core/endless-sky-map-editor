@@ -1263,7 +1263,7 @@ void System::SaveObject(DataWriter &file, const StellarObject &object) const
             file.Write("period", object.period);
         if(object.offset)
             file.Write("offset", object.offset);
-        for(const DataNode &node : unparsed)
+        for(const DataNode &node : object.unparsed)
             file.Write(node);
     }
     file.EndChild();
