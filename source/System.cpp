@@ -1213,7 +1213,11 @@ void System::LoadObject(const DataNode &node, int parent)
     for(const DataNode &child : node)
     {
         if(child.Token(0) == "sprite" && child.Size() >= 2)
+        {
             object.sprite = child.Token(1);
+            for(const DataNode &grand : child)
+                object.spriteProperties.emplace_back(grand);
+        }
         else if(child.Token(0) == "distance" && child.Size() >= 2)
             object.distance = child.Value(1);
         else if(child.Token(0) == "period" && child.Size() >= 2)
@@ -1246,7 +1250,15 @@ void System::SaveObject(DataWriter &file, const StellarObject &object) const
     file.BeginChild();
     {
         if(!object.sprite.isEmpty())
+        {
             file.Write("sprite", object.sprite);
+            file.BeginChild();
+            {
+                for(const DataNode &property : object.spriteProperties)
+                    file.Write(property);
+            }
+            file.EndChild();
+        }
         if(object.distance)
             file.Write("distance", object.distance);
         if(object.period)
