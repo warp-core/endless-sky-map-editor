@@ -64,6 +64,7 @@ public:
     // Get the list of outfits available from the outfitter.
     const std::vector<QString> &Outfitter() const;
 
+    const QString &Government() const;
     // You need this good a reputation with this system's government to land here.
     double RequiredReputation() const;
     // This is what fraction of your fleet's value you must pay as a bribe in
@@ -86,6 +87,7 @@ public:
     std::vector<QString> &Attributes();
     std::vector<QString> &Shipyard();
     std::vector<QString> &Outfitter();
+    void SetGovernment(const QString &newGovernment);
     void SetRequiredReputation(double value);
     void SetBribe(double value);
     void SetSecurity(double value);
