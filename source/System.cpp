@@ -248,6 +248,8 @@ void System::Save(DataWriter &file) const
             file.Write("jump range", jumpRange);
         if(!haze.isEmpty())
             file.Write("haze", haze);
+        if(starfieldDensity != 1.)
+            file.Write("starfield density", starfieldDensity);
         if(!music.isEmpty())
             file.Write("music", music);
         for(const QString &it : links)
@@ -264,8 +266,6 @@ void System::Save(DataWriter &file) const
         for(const PeriodicEvent &it : hazards)
             if(!it.name.isEmpty() && it.period)
                 file.Write("hazard", it.name, it.period);
-        if(starfieldDensity != 1.)
-            file.Write("starfield density", starfieldDensity);
         for(const DataNode &node : unparsed)
             file.Write(node);
         for(const StellarObject &object : objects)
