@@ -98,8 +98,6 @@ private:
     double offset = 0.;
     int parent = -1;
 
-    std::vector<PeriodicEvent> hazards;
-
     std::list<DataNode> unparsed;
 
     // Let System handle setting all the values of an Object.
