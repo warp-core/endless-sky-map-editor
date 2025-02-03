@@ -900,6 +900,7 @@ void System::ChangeStar()
     if(stars == 1)
     {
         StellarObject star = StellarObject::Star();
+        star.system = this;
         star.period = 10.;
         mass = pow(star.Radius(), 3.) * STAR_MASS_SCALE;
 
@@ -909,6 +910,8 @@ void System::ChangeStar()
     {
         StellarObject first = StellarObject::Star();
         StellarObject second = StellarObject::Star();
+        first.system = this;
+        second.system = this;
         first.offset = 0.;
         second.offset = 180.;
 
@@ -1057,6 +1060,7 @@ void System::AddPlanet()
             root = StellarObject::Giant();
     } while(used.count(root.Sprite()));
     objects.push_back(root);
+    objects.back().system = this;
     used.insert(root.Sprite());
 
     int moonCount = rand() % (isTerrestrial ? (rand() % 2 + 1) : (rand() % 3 + 3));
@@ -1082,6 +1086,7 @@ void System::AddPlanet()
         moon.parent = rootIndex;
         Recompute(moon, false);
         objects.push_back(moon);
+        objects.back().system = this;
         moonDistance += 2. * moon.Radius();
     }
     objects[rootIndex].distance = distance + moonDistance;
@@ -1129,6 +1134,7 @@ void System::AddMoon(StellarObject *object, bool isStation)
     // Insert the new moon, then update the parent indices of all moons farther
     // out than this one (because their parents' indices have changed).
     it = objects.insert(it, moon);
+    it->system = this;
     for( ; it != objects.end(); ++it)
         if(it->parent > rootIndex)
             ++it->parent;
@@ -1161,6 +1167,7 @@ void System::Randomize(bool allowHabitable, bool requireHabitable)
             continue;
         break;
     }
+    UpdateObjectPointers();
 }
 
 
@@ -1198,12 +1205,21 @@ void System::Delete(StellarObject *object)
 
 
 
+void System::UpdateObjectPointers()
+{
+    for(StellarObject &object : objects)
+        object.system = this;
+}
+
+
+
 void System::LoadObject(const DataNode &node, int parent)
 {
     int index = static_cast<int>(objects.size());
 
     objects.emplace_back(parent);
     StellarObject &object = objects.back();
+    object.system = this;
 
     if(node.Size() >= 2)
         object.planet = node.Token(1);

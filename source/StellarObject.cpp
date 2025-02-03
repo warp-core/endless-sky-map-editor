@@ -394,6 +394,13 @@ bool StellarObject::IsInhabited() const
 
 
 
+const System *StellarObject::GetSystem() const
+{
+    return system;
+}
+
+
+
 void StellarObject::SetPlanet(const QString &name)
 {
     planet = name;
