@@ -90,7 +90,7 @@ void System::Load(const DataNode &node)
             if(child.Size() >= 2)
             {
                 hyperspaceDepartureDistance = fabs(child.Value(1));
-                jumpDepartureDistance = hyperspaceArrivalDistance;
+                jumpDepartureDistance = hyperspaceDepartureDistance;
             }
             for(const DataNode &grand : child)
             {
