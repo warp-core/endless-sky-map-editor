@@ -235,13 +235,11 @@ void System::Save(DataWriter &file) const
         }
         if(!std::isnan(habitable))
             file.Write("habitable", habitable);
-        for(const Belt &belt : belts)
-        {
-            if(belt.weight == 1)
-                file.Write("belt", belt.radius);
-            else
+        if(belts.size() == 1)
+            file.Write("belt", belts.front().radius);
+        else
+            for(const Belt &belt : belts)
                 file.Write("belt", belt.radius, belt.weight);
-        }
         if(invisibleFenceRadius != 10000.)
             file.Write("invisible fence", invisibleFenceRadius);
         if(jumpRange && jumpRange != 100.)
