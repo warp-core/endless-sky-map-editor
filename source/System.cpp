@@ -183,22 +183,6 @@ void System::Save(DataWriter &file) const
                 file.WriteToken(attribute, '"');
             file.Write();
         }
-        if(!ramscoopUniversal || ramscoopAddend || ramscoopMultiplier != 1. || !ramscoopUnparsed.empty())
-        {
-            file.Write("ramscoop");
-            file.BeginChild();
-            {
-                if(!ramscoopUniversal)
-                    file.Write("universal", "0");
-                if(ramscoopAddend)
-                    file.Write("addend", ramscoopAddend);
-                if(ramscoopMultiplier != 1.)
-                    file.Write("multiplier", ramscoopMultiplier);
-                for(const auto &it : ramscoopUnparsed)
-                    file.Write(it);
-            }
-            file.EndChild();
-        }
         if(hyperspaceArrivalDistance || jumpArrivalDistance)
         {
             if(hyperspaceArrivalDistance == jumpArrivalDistance)
@@ -232,6 +216,22 @@ void System::Save(DataWriter &file) const
                 }
                 file.EndChild();
             }
+        }
+        if(!ramscoopUniversal || ramscoopAddend || ramscoopMultiplier != 1. || !ramscoopUnparsed.empty())
+        {
+            file.Write("ramscoop");
+            file.BeginChild();
+            {
+                if(!ramscoopUniversal)
+                    file.Write("universal", "0");
+                if(ramscoopAddend)
+                    file.Write("addend", ramscoopAddend);
+                if(ramscoopMultiplier != 1.)
+                    file.Write("multiplier", ramscoopMultiplier);
+                for(const auto &it : ramscoopUnparsed)
+                    file.Write(it);
+            }
+            file.EndChild();
         }
         if(!std::isnan(habitable))
             file.Write("habitable", habitable);
