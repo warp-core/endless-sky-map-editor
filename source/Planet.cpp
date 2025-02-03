@@ -47,17 +47,21 @@ void Planet::Load(const DataNode &node)
             music = child.Token(1);
         else if(child.Token(0) == "description" && child.Size() >= 2)
         {
-            if(!description.isEmpty() && !child.Token(1).isEmpty() && child.Token(1)[0] > ' ')
-                description += '\t';
-            description += child.Token(1);
-            description += '\n';
+            description.emplace_back();
+            if(description.size() > 1 && !child.Token(1).isEmpty() && child.Token(1)[0] > ' ')
+                description.back().first += '\t';
+            description.back().first += child.Token(1);
+            if(child.HasChildren())
+                description.back().second = *child.begin();
         }
         else if(child.Token(0) == "spaceport" && child.Size() >= 2)
         {
-            if(!spaceport.isEmpty() && !child.Token(1).isEmpty() && child.Token(1)[0] > ' ')
-                spaceport += '\t';
-            spaceport += child.Token(1);
-            spaceport += '\n';
+            spaceport.emplace_back();
+            if(spaceport.size() > 1 && !child.Token(1).isEmpty() && child.Token(1)[0] > ' ')
+                spaceport.back().first += '\t';
+            spaceport.back().first += child.Token(1);
+            if(child.HasChildren())
+                spaceport.back().second = *child.begin();
         }
         else if(child.Token(0) == "shipyard" && child.Size() >= 2)
             shipyard.push_back(child.Token(1));
@@ -121,17 +125,29 @@ void Planet::Save(DataWriter &file) const
             file.Write("music", music);
 
         // Break the descriptions into paragraphs.
-        for(const QString &str : description.split('\n', Qt::SkipEmptyParts))
+        for(const auto &descLine : description)
         {
             file.WriteToken("description");
-            file.WriteToken(str, '`');
+            file.WriteToken(descLine.first, '`');
             file.Write();
+            if(descLine.second.Size())
+            {
+                file.BeginChild();
+                file.Write(descLine.second);
+                file.EndChild();
+            }
         }
-        for(const QString &str : spaceport.split('\n', Qt::SkipEmptyParts))
+        for(const auto &spaceportLine : spaceport)
         {
             file.WriteToken("spaceport");
-            file.WriteToken(str, '`');
+            file.WriteToken(spaceportLine.first, '`');
             file.Write();
+            if(spaceportLine.second.Size())
+            {
+                file.BeginChild();
+                file.Write(spaceportLine.second);
+                file.EndChild();
+            }
         }
 
         for(const QString &it : shipyard)
@@ -216,7 +232,13 @@ const QString &Planet::DisplayName() const
 // Get the planet's descriptive text.
 const QString &Planet::Description() const
 {
-    return description;
+    if(!descriptionFilled)
+    {
+        descriptionFilled = true;
+        for(const auto &it : description)
+            descriptionString += it.first + "\n";
+    }
+    return descriptionString;
 }
 
 
@@ -241,7 +263,7 @@ const vector<QString> &Planet::Attributes() const
 // jobs, banking, and hiring).
 bool Planet::HasSpaceport() const
 {
-    return !spaceport.isEmpty();
+    return !spaceport.empty();
 }
 
 
@@ -249,7 +271,13 @@ bool Planet::HasSpaceport() const
 // Get the spaceport's descriptive text.
 const QString &Planet::SpaceportDescription() const
 {
-    return spaceport;
+    if(!spaceportFilled)
+    {
+        spaceportFilled = true;
+        for(const auto &it : spaceport)
+            spaceportString += it.first + "\n";
+    }
+    return spaceportString;
 }
 
 
@@ -352,14 +380,28 @@ void Planet::SetLandscape(const QString &sprite)
 
 void Planet::SetDescription(const QString &text)
 {
-    description = text;
+    description.clear();
+    descriptionFilled = false;
+    descriptionString.clear();
+    for(const QString &str : text.split('\n', Qt::SkipEmptyParts))
+    {
+        description.emplace_back();
+        description.back().first = str;
+    }
 }
 
 
 
 void Planet::SetSpaceportDescription(const QString &text)
 {
-    spaceport = text;
+    spaceport.clear();
+    spaceportFilled = false;
+    spaceportString.clear();
+    for(const QString &str : text.split('\n', Qt::SkipEmptyParts))
+    {
+        spaceport.emplace_back();
+        spaceport.back().first = str;
+    }
 }
 
 

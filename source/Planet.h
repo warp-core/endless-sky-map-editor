@@ -97,8 +97,12 @@ private:
     QString trueName;
     std::optional<QString> displayName;
     QString landscape;
-    QString description;
-    QString spaceport;
+    std::vector<std::pair<QString, DataNode>> description;
+    mutable QString descriptionString;
+    mutable bool descriptionFilled = false;
+    std::vector<std::pair<QString, DataNode>> spaceport;
+    mutable QString spaceportString;
+    mutable bool spaceportFilled = false;
     QString government;
     QString music;
     std::vector<QString> tributeFleetNames;
