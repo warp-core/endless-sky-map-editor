@@ -42,6 +42,7 @@ public slots:
     void UseDisplayNameChanged();
     void DisplayNameChanged();
     void AttributesChanged();
+    void GovernmentChanged();
     void DescriptionChanged();
     void SpaceportDescriptionChanged();
     void ShipyardChanged();
@@ -67,6 +68,7 @@ private:
     QCheckBox *useDisplayName;
     QLineEdit *displayName;
     QLineEdit *attributes;
+    QLineEdit *government;
     LandscapeView *landscape;
     QPlainTextEdit *description;
     QPlainTextEdit *spaceport;

@@ -53,6 +53,9 @@ PlanetView::PlanetView(Map &mapData, QWidget *parent) :
     attributes = new QLineEdit(this);
     connect(attributes, SIGNAL(editingFinished()), this, SLOT(AttributesChanged()));
 
+    government = new QLineEdit(this);
+    connect(government, SIGNAL(editingFinished()), this, SLOT(GovernmentChanged()));
+
     landscape = new LandscapeView(mapData, this);
     landscape->setMinimumHeight(360);
     landscape->setMaximumHeight(360);
@@ -103,6 +106,8 @@ PlanetView::PlanetView(Map &mapData, QWidget *parent) :
     layout->addWidget(displayName, row++, 1);
     layout->addWidget(new QLabel("Attributes:", this), row, 0);
     layout->addWidget(attributes, row++, 1);
+    layout->addWidget(new QLabel("Government:", this), row, 0);
+    layout->addWidget(government, row++, 1);
 
     layout->addWidget(landscape, row++, 0, 1, 2);
 
@@ -159,6 +164,7 @@ void PlanetView::SetPlanet(StellarObject *object)
         useDisplayName->setCheckState(Qt::CheckState::Unchecked);
         displayName->clear();
         attributes->clear();
+        government->clear();
         landscape->SetPlanet(nullptr);
         description->clear();
         spaceport->clear();
@@ -183,6 +189,9 @@ void PlanetView::SetPlanet(StellarObject *object)
             displayName->setReadOnly(true);
         displayName->setPlaceholderText(planet.TrueName());
         attributes->setText(ToString(planet.Attributes()));
+        government->setText(planet.Government());
+        if(government->text().isEmpty() && object->GetSystem())
+            government->setPlaceholderText(object->GetSystem()->Government());
         landscape->SetPlanet(&planet);
 
         disconnect(description, SIGNAL(textChanged()), this, SLOT(DescriptionChanged()));
@@ -294,6 +303,24 @@ void PlanetView::AttributesChanged()
             mapData.SetChanged();
         }
     }
+}
+
+
+
+void PlanetView::GovernmentChanged()
+{
+    if(!object || object->GetPlanet().isEmpty())
+        return;
+
+    Planet &planet = mapData.Planets()[object->GetPlanet()];
+    const QString &text = government->text();
+    if(planet.Government() == text)
+        return;
+    if(object->GetSystem() && text == object->GetSystem()->Government())
+        planet.SetGovernment(QString());
+    else
+        planet.SetGovernment(text);
+    mapData.SetChanged();
 }
 
 

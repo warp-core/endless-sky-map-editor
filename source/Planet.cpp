@@ -314,6 +314,13 @@ const vector<QString> &Planet::Outfitter() const
 
 
 
+const QString &Planet::Government() const
+{
+    return government;
+}
+
+
+
 // You need this good a reputation with this system's government to land here.
 double Planet::RequiredReputation() const
 {
@@ -423,6 +430,13 @@ vector<QString> &Planet::Shipyard()
 vector<QString> &Planet::Outfitter()
 {
     return outfitter;
+}
+
+
+
+void Planet::SetGovernment(const QString &newGovernment)
+{
+    government = newGovernment;
 }
 
 
