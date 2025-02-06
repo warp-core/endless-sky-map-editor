@@ -37,6 +37,112 @@ namespace {
 
     static const int RANDOM_STAR_DISTANCE = 40;
     static const double MIN_STAR_DISTANCE = 40.;
+
+    struct StarData {
+        StarData(QString name, double habitable, double mass) : name(name), habitable(habitable), mass(mass) {}
+        StarData() = delete;
+        double Mass() const { return mass * 6.25; }
+        QString name;
+        double habitable;
+    private:
+        double mass;
+    };
+
+    const vector<StarData> stars = {{
+        {"o-supergiant", 33450., 33450.}, // 1.5x giant
+        {"o-giant", 22300., 22300.}, // 1.5x above the gap between the next two smallest
+        {"o0", 13720., 13720.}, // 70
+        {"o3", 11500., 11500.}, // ~66
+        {"o5", 10000., 10000.}, // ~63
+        {"o8", 8650., 8650.}, // ~60
+        {"o-dwarf", 1325., 1325.}, // Proportional with o8
+
+        {"b-supergiant", 17025., 17025.}, // 1.5x giant
+        {"b-giant", 11350., 11350.}, // 1.5x above the gap between the next two smallest
+        {"b0", 7000., 7000.}, // ~56
+        {"b3", 6300., 6300.}, // ~54
+        {"b5", 5600., 5600.}, // ~52
+        {"b8", 5000., 5000.}, // 50
+        {"b-dwarf", 1125., 1125.}, // Proportional with b8
+
+        {"a-supergiant", 11850., 11850.}, // 1.5x giant
+        {"a-giant", 7900., 7900.}, // 1.5x above the gap between the next two smallest
+        {"a0", 3650., 3650.}, // ~45
+        {"a3", 3400., 3400.}, // ~44
+        {"a5", 3200., 3200.}, // ~43
+        {"a8", 3000., 3000.}, // ~42
+        {"a-dwarf", 750., 750.}, //  Proportional with a8
+        {"a-eater", 1000., 800.},
+
+        {"f-supergiant", 8400., 8400.}, // 1.5x giant
+        {"f-giant", 5600., 5600.}, // 1.5x above the gap between the next two smallest
+        {"f0", 2560., 2560.}, // 40
+        {"f3", 2200., 2200.}, // 38
+        {"f5", 1715., 1715.}, // 35
+        {"f5-old", 3430., 3430.}, // 2x f5
+        {"f8", 1310., 1310.}, // 32
+        {"f-dwarf", 355., 355.}, // Proportional with f8
+
+        {"g-supergiant", 6075., 6075.}, // 1.5x giant
+        {"g-giant", 4050., 4050.}, // 1.5x above the gap between k-giant and m-giant
+        {"g0", 1080., 1080.}, // 30
+        {"g0-old", 2160., 2160.}, // 2x g0
+        {"g3", 700., 700.}, // 26
+        {"g5", 625., 625.}, // 25
+        {"g5-old", 1250., 1250.}, // 2x g5
+        {"g8", 550., 550.}, // 24
+        {"g-dwarf", 150., 150.}, // Proportional with g8
+
+        {"k-supergiant", 4500., 4500.}, // 1.5x giant
+        {"k-giant", 3000., 3000.}, // Proportional to k0
+        {"k0", 490., 490.}, // ~23
+        {"k0-old", 980., 980.}, // 2x k0
+        {"k3", 450., 450.}, // ~22.5
+        {"k5", 425., 425.}, // ~22
+        {"k5-old", 950., 950.}, // 2x k5
+        {"k8", 370., 370.}, // ~21
+        {"k-dwarf", 100., 100.}, // Proportional with k8
+
+        {"m-supergiant", 3450., 3450.}, // 1.5x giant
+        {"m-giant", 2300., 2300.}, // Proportional to m0
+        {"m0", 320., 320.}, // ~20
+        {"m3", 230., 230.}, // ~18
+        {"m5", 160., 160.}, // ~16
+        {"m8", 135., 135.}, // 15
+        {"m-dwarf", 35., 35.}, // Proportional with m8
+
+        {"l-dwarf", 30., 30.}, // Less than m-dwarf
+
+        {"carbon", 3000., 3000.},
+        {"nova", 100., 5000.},
+        {"nova-old", 100., 5000.},
+        {"nova-small", 100., 5000.},
+        {"neutron", 100., 5000.},
+        {"neutron-small", 80., 2000.},
+        {"magnetar", 120., 5000.},
+        {"wr", 50000., 5000.},
+        {"black-hole", 100000., 100000.},
+        {"small-black-hole", 10000., 10000.},
+        {"coal-black-hole", 10000., 10000.},
+        {"twilight-black-hole", 100000., 10000.},
+
+        // Use a higher mass than habitable range so that object periods aren't super high.
+        {"browndwarf-l-rogue", 10., 20.},
+        {"browndwarf-t-rogue", 10., 20.},
+        {"browndwarf-y-rogue", 10., 20.},
+
+        // Chopping block
+        {"rogue-radiating", 10., 20.},
+        {"protostar-orange", 370., 370.},
+        {"protostar-yellow", 135., 135.},
+        {"giant", 3450., 3450.},
+
+        {"smoke ring", 0., 0.},
+        {"void-scar", 0., 0.},
+
+        // Default value for systems without a known star.
+        {"default", 100., 100.}
+    }};
 }
 
 
@@ -1291,11 +1397,27 @@ void System::SaveObject(DataWriter &file, const StellarObject &object) const
 
 void System::Recompute(StellarObject &object, bool updateOffset)
 {
-    double mass = habitable * HABITABLE_SCALE;
+    if(object.sprite.startsWith("star/") || object.sprite.contains("rogue"))
+        return;
+    double mass = 0.;
+    for(const auto &stellar : objects)
+    {
+        if((stellar.sprite.startsWith("star/") && !stellar.sprite.contains("-core")) || stellar.sprite.contains("rogue"))
+        {
+            const QString name = stellar.sprite.section('/', 1);
+            const auto it = std::find_if(stars.begin(), stars.end(),
+                [&name](const StarData &it) -> bool { return it.name == name; });
+            const StarData &star = (it == stars.end() ? stars.back() : *it);
+            mass += star.Mass();
+        }
+    }
     if(object.Parent() >= 0.)
-        mass = pow(objects[object.Parent()].Radius(), 3.) * PLANET_MASS_SCALE;
+        return; //mass = pow(objects[object.Parent()].Radius(), 3.) * PLANET_MASS_SCALE;
 
-    double newPeriod = sqrt(pow(object.distance, 3) / mass);
+    double d = object.distance;
+    if(object.sprite.contains("panel"))
+        d = 812.;
+    double newPeriod = sqrt(pow(d, 3) / mass);
     if(updateOffset)
     {
         double delta = timeStep / object.period - timeStep / newPeriod;
