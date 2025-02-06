@@ -202,7 +202,7 @@ private:
     std::map<QString, int> trade;
     std::vector<PeriodicEvent> fleets;
     std::vector<PeriodicEvent> hazards;
-    std::vector<Belt> belts;;
+    std::vector<Belt> belts;
 
     bool hidden = false;
     bool shrouded = false;
