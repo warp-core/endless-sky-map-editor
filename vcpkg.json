@@ -1,0 +1,21 @@
+{
+  "dependencies": [
+    {
+      "name": "qtbase",
+      "features": [
+        "default-features",
+        "icu",
+        "gui",
+        "jpeg",
+        "opengl",
+        "png",
+        "widgets"
+      ],
+      "default-features": false
+    },
+    {
+      "name": "qtwayland",
+      "platform": "linux"
+    }
+  ]
+}

@@ -30,7 +30,6 @@ DataWriter::DataWriter(const QString &path)
     if(file.open(QFile::WriteOnly))
     {
         out.setDevice(&file);
-        out.setCodec("UTF-8");
     }
 }
 
