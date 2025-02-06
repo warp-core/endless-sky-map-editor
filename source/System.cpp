@@ -32,7 +32,7 @@ namespace {
     static const double MIN_MOON_GAP = 10.;
     static const int RANDOM_MOON_GAP = 50;
     static const double STAR_MASS_SCALE = .25;
-    static const double PLANET_MASS_SCALE = .015;
+    //static const double PLANET_MASS_SCALE = .015;
     static const double HABITABLE_SCALE = 6.25;
 
     static const int RANDOM_STAR_DISTANCE = 40;
