@@ -1382,7 +1382,16 @@ void System::SaveObject(DataWriter &file, const StellarObject &object) const
         if(object.distance)
             file.Write("distance", object.distance);
         if(object.period)
-            file.Write("period", object.period);
+        {
+            QString result = QString::number(object.period, 'g', 13);
+            if(result.contains('.') && result.size() > 7)
+            {
+                result.resize(7);
+                if(result.back() == '.')
+                    result.resize(6);
+            }
+            file.Write("period", result);
+        }
         if(object.offset)
             file.Write("offset", object.offset);
         for(const DataNode &node : object.unparsed)
