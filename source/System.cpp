@@ -162,7 +162,7 @@ void System::Load(const DataNode &node)
         else if(child.Token(0) == "pos" && child.Size() >= 3)
             position = QVector2D(child.Value(1), child.Value(2));
         else if(child.Token(0) == "attributes")
-            for(size_t i = 1; i < child.Size(); ++i)
+            for(int i = 1; i < child.Size(); ++i)
                 attributes.insert(child.Token(i));
         else if(child.Token(0) == "hidden")
             hidden = true;
