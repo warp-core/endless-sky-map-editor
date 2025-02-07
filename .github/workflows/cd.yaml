@@ -83,6 +83,8 @@ jobs:
     needs:
       - cd_windows_x64
       - cd_macos_x64
+    permissions:
+      contents: write
     env:
       GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       OUTPUT_WINDOWS: EndlessSkyEditor-win64-continuous.zip
