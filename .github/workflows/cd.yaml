@@ -1,0 +1,77 @@
+name: CD
+
+on:
+  push:
+    branches:
+      - master
+  pull_request:
+    types: [opened, synchronize]
+    paths:
+    - 'source/**'
+    - '.github/workflows/**'
+    - 'CMakeLists.txt'
+    - 'CMakePresets.json'
+    - 'vcpkg.json'
+    - 'vcpkg-configuration.json'
+
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.head_ref || github.run_id }}
+  cancel-in-progress: true
+
+jobs:
+  cd_windows_x64:
+    name: Windows
+    runs-on: windows-2022
+    env:
+      OUTPUT: EndlessSkyEditor-win64-continuous.zip
+      GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    steps:
+    - uses: actions/checkout@v4
+      with:
+        show-progress: false
+    - uses: lukka/get-cmake@v3.28.3
+    - uses: lukka/run-vcpkg@v11
+    - uses: lukka/run-cmake@v10
+      with:
+        configurePreset: 'mingw-release'
+        buildPreset: 'mingw-ci-release'
+    - name: Package Application
+      run: |
+        cmake --install build/release
+        7z a ${{ env.OUTPUT }} "./install/release/*"
+    - name: Upload artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: ${{ env.OUTPUT }}
+        path: ${{ env.OUTPUT }}
+
+
+  cd_macos_x64:
+    name: MacOS
+    runs-on: macos-13
+    env:
+      OUTPUT: EndlessSkyEditor-macOS-continuous.zip
+      GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    steps:
+    - uses: actions/checkout@v4
+      with:
+        show-progress: false
+    - name: Install pkg-config
+      run: brew install automake autoconf-archive
+    - uses: lukka/get-cmake@v3.28.3
+    - uses: lukka/run-vcpkg@v11
+    - uses: lukka/run-cmake@v10
+      with:
+        configurePreset: 'macos-release'
+        buildPreset: 'macos-ci-release'
+    - name: Package Application
+      run: |
+        cmake --install build/release
+        7z a ${{ env.OUTPUT }} "./install/release/*"
+    - name: Upload artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: ${{ env.OUTPUT }}
+        path: ${{ env.OUTPUT }}
+
