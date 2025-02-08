@@ -39,7 +39,6 @@ signals:
 public slots:
     void TrueNameChanged();
     void TrueNameEdited();
-    void UseDisplayNameChanged();
     void DisplayNameChanged();
     void AttributesChanged();
     void GovernmentChanged();
@@ -65,7 +64,6 @@ private:
     StellarObject *object = nullptr;
 
     QLineEdit *trueName;
-    QCheckBox *useDisplayName;
     QLineEdit *displayName;
     QLineEdit *attributes;
     QLineEdit *government;
