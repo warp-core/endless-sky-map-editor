@@ -47,7 +47,6 @@ signals:
 public slots:
     void TrueNameEdited();
     void TrueNameChanged();
-    void UseDisplayNameChanged();
     void DisplayNameChanged();
     void GovernmentChanged();
     void HiddenClicked();
@@ -83,7 +82,6 @@ private:
     System *system = nullptr;
 
     QLineEdit *trueName = nullptr;
-    QCheckBox *useDisplayName = nullptr;
     QLineEdit *displayName = nullptr;
     QLineEdit *government = nullptr;
 

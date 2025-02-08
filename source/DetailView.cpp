@@ -53,9 +53,7 @@ DetailView::DetailView(Map &mapData, GalaxyView *galaxyView, QWidget *parent) :
     layout->addLayout(trueNameRow);
 
     QHBoxLayout *displayNameRow = new QHBoxLayout(this);
-    useDisplayName = new QCheckBox("Display name:", this);
-    connect(useDisplayName, SIGNAL(clicked()), this, SLOT(UseDisplayNameChanged()));
-    displayNameRow->addWidget(useDisplayName);
+    displayNameRow->addWidget(new QLabel("Display Name:", this));
     displayName = new QLineEdit(this);
     connect(displayName, SIGNAL(editingFinished()), this, SLOT(DisplayNameChanged()));
     displayNameRow->addWidget(displayName);
@@ -205,18 +203,9 @@ void DetailView::SetSystem(System *system)
     if(system)
     {
         trueName->setText(system->TrueName());
+        displayName->setPlaceholderText(system->TrueName());
         if(system->HasDisplayName())
-        {
-            useDisplayName->setCheckState(Qt::CheckState::Checked);
             displayName->setText(system->DisplayName());
-            displayName->setReadOnly(false);
-        }
-        else
-        {
-            useDisplayName->setCheckState(Qt::CheckState::Unchecked);
-            displayName->clear();
-            displayName->setReadOnly(true);
-        }
         government->setText(system->Government());
 
         hidden->setChecked(system->Hidden());
@@ -386,19 +375,6 @@ void DetailView::TrueNameChanged()
             trueName->setText(system->TrueName());
     }
     trueName->blockSignals(false);
-}
-
-
-
-void DetailView::UseDisplayNameChanged()
-{
-    if(!system)
-        return;
-
-    if(useDisplayName->isChecked())
-        displayName->setReadOnly(false);
-    else
-        displayName->setReadOnly(true);
 }
 
 
