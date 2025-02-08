@@ -97,10 +97,10 @@ if(APPLE AND ES_CREATE_BUNDLE)
 	set_target_properties(EndlessSkyEditor PROPERTIES
 		MACOSX_BUNDLE_INFO_PLIST "${CMAKE_CURRENT_LIST_DIR}/resources/EndlessSkyEditor-Info.plist"
 		XCODE_ATTRIBUTE_ASSETCATALOG_COMPILER_APPICON_NAME endless-sky-editor)
-	set_target_properties(EndlessSkyEditor PROPERTIES OUTPUT_NAME "Endless Sky Editor")
+	set_target_properties(EndlessSkyEditor PROPERTIES OUTPUT_NAME "endless-sky-editor")
 elseif(WIN32)
     qt_add_executable(EndlessSkyEditor WIN32 source/main.cpp source/WinApp.rc)
-	set_target_properties(EndlessSkyEditor PROPERTIES OUTPUT_NAME "Endless Sky Editor")
+	set_target_properties(EndlessSkyEditor PROPERTIES OUTPUT_NAME "endless-sky-editor")
 else()
 	qt_add_executable(EndlessSkyEditor source/main.cpp)
 	set_target_properties(EndlessSkyEditor PROPERTIES OUTPUT_NAME "endless-sky-editor")
