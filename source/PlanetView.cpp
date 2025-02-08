@@ -96,16 +96,19 @@ PlanetView::PlanetView(Map &mapData, QWidget *parent) :
 
 
     QGridLayout *layout = new QGridLayout(this);
-    int row = 0;
+    int row = 1;
 
-    layout->addWidget(new QLabel("Planet:", this), row, 0);
-    layout->addWidget(trueName, row++, 1);
-    layout->addWidget(new QLabel("Display name:", this), row, 0);
-    layout->addWidget(displayName, row++, 1);
+    QHBoxLayout *firstRowLayout = new QHBoxLayout(this);
+    firstRowLayout->addWidget(new QLabel("Planet:", this));
+    firstRowLayout->addWidget(trueName);
+    firstRowLayout->addWidget(new QLabel("Display name:", this));
+    firstRowLayout->addWidget(displayName);
+    firstRowLayout->addWidget(new QLabel("Government:", this));
+    firstRowLayout->addWidget(government);
+    layout->addLayout(firstRowLayout, 0, 0, 1, -1);
+
     layout->addWidget(new QLabel("Attributes:", this), row, 0);
     layout->addWidget(attributes, row++, 1);
-    layout->addWidget(new QLabel("Government:", this), row, 0);
-    layout->addWidget(government, row++, 1);
 
     layout->addWidget(landscape, row++, 0, 1, 2);
 
