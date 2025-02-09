@@ -128,19 +128,22 @@ PlanetView::PlanetView(Map &mapData, QWidget *parent) :
     salesAndTribute->addLayout(salesWrapperLayout);
 
     QGridLayout *tributeLayout = new QGridLayout(this);
-    QWidget *tributeBox = new QWidget(this);
-    QHBoxLayout *tributeNumberLayout = new QHBoxLayout(tributeBox);
-    tributeNumberLayout->setContentsMargins(0, 0, 0, 0);
-    tributeNumberLayout->addWidget(tribute);
-    tributeNumberLayout->addWidget(new QLabel("Threshold:", this));
-    tributeNumberLayout->addWidget(tributeThreshold);
-    tributeNumberLayout->addStretch();
+    //QWidget *tributeBox = new QWidget(this);
+    //QHBoxLayout *tributeNumberLayout = new QHBoxLayout(tributeBox);
+    //tributeNumberLayout->setContentsMargins(0, 0, 0, 0);
+    //tributeNumberLayout->addWidget(tribute);
+    //tributeNumberLayout->addWidget(new QLabel("Threshold:", this));
+    //tributeNumberLayout->addWidget(tributeThreshold);
+    //tributeNumberLayout->addStretch();
     tributeLayout->addWidget(new QLabel("Tribute:", this), 0, 0);
-    tributeLayout->addWidget(tributeBox, 0, 1, 1, -1);
+    tributeLayout->addWidget(tribute, 0, 1);
+    tributeLayout->addWidget(new QLabel("Threshold:", this), 0, 2);
+    tributeLayout->addWidget(tributeThreshold, 0, 3);
+    //tributeLayout->addWidget(tributeBox, 0, 1, 1, -1);
     tributeLayout->addWidget(new QLabel("Fleets:", this), 1, 0);
     tributeLayout->addWidget(tributeFleetNames, 1, 1, 1, -1);
 
-    QWidget *box = new QWidget(this);
+    /*QWidget *box = new QWidget(this);
     QHBoxLayout *hLayout = new QHBoxLayout(box);
     hLayout->setContentsMargins(0, 0, 0, 0);
     hLayout->addWidget(new QLabel("Required reputation:", this));
@@ -150,7 +153,16 @@ PlanetView::PlanetView(Map &mapData, QWidget *parent) :
     hLayout->addWidget(new QLabel("Security:", this));
     hLayout->addWidget(security);
     hLayout->addStretch();
-    tributeLayout->addWidget(box, 2, 0, 1, -1);
+    tributeLayout->addWidget(box, 2, 0, 1, -1);*/
+
+    QHBoxLayout *requiredReputationRowLayout = new QHBoxLayout(this);
+    requiredReputationRowLayout->addWidget(new QLabel("Required reputation:", this));
+    requiredReputationRowLayout->addWidget(reputation);
+    tributeLayout->addLayout(requiredReputationRowLayout, 2, 0, 1, -1);
+    tributeLayout->addWidget(new QLabel("Security:", this), 3, 0);
+    tributeLayout->addWidget(security, 3, 1);
+    tributeLayout->addWidget(new QLabel("Bribe:", this), 3, 2);
+    tributeLayout->addWidget(bribe, 3, 3);
 
     salesAndTribute->addLayout(tributeLayout);
     layout->addLayout(salesAndTribute, row++, 0, 1, -1);
