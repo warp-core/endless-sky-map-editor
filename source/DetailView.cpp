@@ -17,8 +17,10 @@ PARTICULAR PURPOSE.  See the GNU General Public License for more details.
 #include "System.h"
 
 #include <QCheckBox>
+#include <QDoubleValidator>
 #include <QEvent>
 #include <QMessageBox>
+#include <QIntValidator>
 #include <QLabel>
 #include <QLineEdit>
 #include <QSpinBox>
@@ -85,23 +87,23 @@ DetailView::DetailView(Map &mapData, GalaxyView *galaxyView, QWidget *parent) :
     interstellarLayout->addWidget(new QLabel("Jump drive:", this), 2, 0, 1, 1);
     interstellarLayout->addWidget(new QLabel("Jump range:", this), 3, 2, 1, 1);
     hyperArrival = new QLineEdit(this);
-    hyperArrival->setValidator(new QRegularExpressionValidator(QRegularExpression("-?\\d*\\.?\\d*"), hyperArrival));
+    hyperArrival->setValidator(new QDoubleValidator(hyperArrival;
     connect(hyperArrival, SIGNAL(editingFinished()), this, SLOT(HyperArrivalChanged()));
     interstellarLayout->addWidget(hyperArrival, 1, 1, 1, 1);
     jumpArrival = new QLineEdit(this);
-    jumpArrival->setValidator(new QRegularExpressionValidator(QRegularExpression("\\d*\\.?\\d*"), jumpArrival));
+    jumpArrival->setValidator(new QDoubleValidator(jumpArrival));
     connect(jumpArrival, SIGNAL(editingFinished()), this, SLOT(JumpArrivalChanged()));
     interstellarLayout->addWidget(jumpArrival, 2, 1, 1, 1);
     hyperDeparture = new QLineEdit(this);
-    hyperDeparture->setValidator(new QRegularExpressionValidator(QRegularExpression("\\d*\\.?\\d*"), hyperDeparture));
+    hyperDeparture->setValidator(new QDoubleValidator(hyperDeparture));
     connect(hyperDeparture, SIGNAL(editingFinished()), this, SLOT(HyperDepartureChanged()));
     interstellarLayout->addWidget(hyperDeparture, 1, 2, 1, 1);
     jumpDeparture = new QLineEdit(this);
-    jumpDeparture->setValidator(new QRegularExpressionValidator(QRegularExpression("\\d*\\.?\\d*"), jumpDeparture));
+    jumpDeparture->setValidator(new QDoubleValidator(jumpDeparture));
     connect(jumpDeparture, SIGNAL(editingFinished()), this, SLOT(JumpDepartureChanged()));
     interstellarLayout->addWidget(jumpDeparture, 2, 2, 1, 1);
     jumpRange = new QLineEdit(this);
-    jumpRange->setValidator(new QRegularExpressionValidator(QRegularExpression("\\d*\\.?\\d*"), jumpRange));
+    jumpRange->setValidator(new QDoubleValidator(jumpRange));
     connect(jumpRange, SIGNAL(editingFinished()), this, SLOT(JumpRangeChanged()));
     interstellarLayout->addWidget(jumpRange, 3, 3, 1, 1);
     arrivalFromHabitable = new QCheckBox("Arrival from habitable", this);
@@ -117,12 +119,12 @@ DetailView::DetailView(Map &mapData, GalaxyView *galaxyView, QWidget *parent) :
     ramscoopLayout->addWidget(ramscoopUniversal, 1, 0);
     ramscoopLayout->addWidget(new QLabel("Addend:", this), 0, 1);
     ramscoopAddend = new QLineEdit(this);
-    ramscoopAddend->setValidator(new QRegularExpressionValidator(QRegularExpression("-?\\d*\\.?\\d*"), ramscoopAddend));
+    ramscoopAddend->setValidator(new QDoubleValidator(ramscoopAddend));
     connect(ramscoopAddend, SIGNAL(editingFinished()), this, SLOT(RamscoopAddendChanged()));
     ramscoopLayout->addWidget(ramscoopAddend, 0, 2);
     ramscoopLayout->addWidget(new QLabel("Multiplier:", this), 1, 1);
     ramscoopMultiplier = new QLineEdit(this);
-    ramscoopMultiplier->setValidator(new QRegularExpressionValidator(QRegularExpression("-?\\d*\\.?\\d*"), ramscoopMultiplier));
+    ramscoopMultiplier->setValidator(new QDoubleValidator(ramscoopMultiplier));
     connect(ramscoopMultiplier, SIGNAL(editingFinished()), this, SLOT(RamscoopMultiplierChanged()));
     ramscoopLayout->addWidget(ramscoopMultiplier, 1, 2);
     layout->addLayout(ramscoopLayout);

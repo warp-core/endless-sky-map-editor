@@ -17,8 +17,10 @@ PARTICULAR PURPOSE.  See the GNU General Public License for more details.
 #include "StellarObject.h"
 
 #include <QCheckBox>
+#include <QDoubleValidator>
 #include <QGridLayout>
 #include <QHBoxLayout>
+#include <QIntValidator>
 #include <QLabel>
 #include <QLineEdit>
 #include <QMessageBox>
@@ -72,23 +74,23 @@ PlanetView::PlanetView(Map &mapData, QWidget *parent) :
     connect(outfitter, SIGNAL(editingFinished()), this, SLOT(OutfitterChanged()));
 
     reputation = new QLineEdit(this);
-    reputation->setValidator(new QRegularExpressionValidator(QRegularExpression("-?\\d*\\.?\\d*"), reputation));
+    reputation->setValidator(new QDoubleValidator(reputation));
     connect(reputation, SIGNAL(editingFinished()), this, SLOT(ReputationChanged()));
 
     bribe = new QLineEdit(this);
-    bribe->setValidator(new QRegularExpressionValidator(QRegularExpression("0||0?\\.\\d*"), bribe));
+    bribe->setValidator(new QDoubleValidator(brige));
     connect(bribe, SIGNAL(editingFinished()), this, SLOT(BribeChanged()));
 
     security = new QLineEdit(this);
-    security->setValidator(new QRegularExpressionValidator(QRegularExpression("0||0?\\.\\d*"), security));
+    security->setValidator(new QDoubleValidator(security));
     connect(security, SIGNAL(editingFinished()), this, SLOT(SecurityChanged()));
 
     tribute = new QLineEdit(this);
-    tribute->setValidator(new QRegularExpressionValidator(QRegularExpression("\\d*"), tribute));
+    tribute->setValidator(new QIntValidator(tribute));
     connect(tribute, SIGNAL(editingFinished()), this, SLOT(TributeChanged()));
 
     tributeThreshold = new QLineEdit(this);
-    tributeThreshold->setValidator(new QRegularExpressionValidator(QRegularExpression("\\d*"), tributeThreshold));
+    tributeThreshold->setValidator(new QIntValidator(tributeThreshold;
     connect(tributeThreshold, SIGNAL(editingFinished()), this, SLOT(TributeThresholdChanged()));
 
     tributeFleetNames = new QLineEdit(this);
@@ -105,6 +107,7 @@ PlanetView::PlanetView(Map &mapData, QWidget *parent) :
     firstRowLayout->addWidget(displayName);
     firstRowLayout->addWidget(new QLabel("Government:", this));
     firstRowLayout->addWidget(government);
+    firstRowLayout->addStretch();
     layout->addLayout(firstRowLayout, 0, 0, 1, -1);
 
     layout->addWidget(new QLabel("Attributes:", this), row, 0);
