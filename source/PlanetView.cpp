@@ -116,10 +116,29 @@ PlanetView::PlanetView(Map &mapData, QWidget *parent) :
     layout->addWidget(new QLabel("Spaceport description:", this), row++, 0, 1, 2);
     layout->addWidget(spaceport, row++, 0, 1, 2);
 
-    layout->addWidget(new QLabel("Shipyard:", this), row, 0);
-    layout->addWidget(shipyard, row++, 1);
-    layout->addWidget(new QLabel("Outfitter:", this), row, 0);
-    layout->addWidget(outfitter, row++, 1);
+    QHBoxLayout *salesAndTribute = new QHBoxLayout(this);
+    QVBoxLayout *salesWrapperLayout = new QVBoxLayout(this);
+    QGridLayout *salesLayout = new QGridLayout(this);
+    salesLayout->addWidget(new QLabel("Shipyard:", this), 0, 0);
+    salesLayout->addWidget(shipyard, 1, 0);
+    salesLayout->addWidget(new QLabel("Outfitter:", this), 0, 1);
+    salesLayout->addWidget(outfitter, 1, 1);
+    salesWrapperLayout->addLayout(salesLayout);
+    salesWrapperLayout->addStretch();
+    salesAndTribute->addLayout(salesWrapperLayout);
+
+    QGridLayout *tributeLayout = new QGridLayout(this);
+    QWidget *tributeBox = new QWidget(this);
+    QHBoxLayout *tributeNumberLayout = new QHBoxLayout(tributeBox);
+    tributeNumberLayout->setContentsMargins(0, 0, 0, 0);
+    tributeNumberLayout->addWidget(tribute);
+    tributeNumberLayout->addWidget(new QLabel("Threshold:", this));
+    tributeNumberLayout->addWidget(tributeThreshold);
+    tributeNumberLayout->addStretch();
+    tributeLayout->addWidget(new QLabel("Tribute:", this), 0, 0);
+    tributeLayout->addWidget(tributeBox, 0, 1, 1, -1);
+    tributeLayout->addWidget(new QLabel("Fleets:", this), 1, 0);
+    tributeLayout->addWidget(tributeFleetNames, 1, 1, 1, -1);
 
     QWidget *box = new QWidget(this);
     QHBoxLayout *hLayout = new QHBoxLayout(box);
@@ -131,20 +150,10 @@ PlanetView::PlanetView(Map &mapData, QWidget *parent) :
     hLayout->addWidget(new QLabel("Security:", this));
     hLayout->addWidget(security);
     hLayout->addStretch();
-        layout->addWidget(box, row++, 0, 1, 2);
+    tributeLayout->addWidget(box, 2, 0, 1, -1);
 
-    QWidget *tributeBox = new QWidget(this);
-    QHBoxLayout *tributeHLayout = new QHBoxLayout(tributeBox);
-    tributeHLayout->setContentsMargins(0, 0, 0, 0);
-    tributeHLayout->addWidget(new QLabel("Tribute:", this));
-    tributeHLayout->addWidget(tribute);
-    tributeHLayout->addWidget(new QLabel("Threshold:", this));
-    tributeHLayout->addWidget(tributeThreshold);
-    tributeHLayout->addWidget(new QLabel("Fleets:", this));
-    tributeHLayout->addWidget(tributeFleetNames);
-    tributeHLayout->addStretch();
-
-    layout->addWidget(tributeBox, row++, 0, 1, 2);
+    salesAndTribute->addLayout(tributeLayout);
+    layout->addLayout(salesAndTribute, row++, 0, 1, -1);
 
     setLayout(layout);
 }
