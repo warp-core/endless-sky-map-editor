@@ -78,7 +78,7 @@ PlanetView::PlanetView(Map &mapData, QWidget *parent) :
     connect(reputation, SIGNAL(editingFinished()), this, SLOT(ReputationChanged()));
 
     bribe = new QLineEdit(this);
-    bribe->setValidator(new QDoubleValidator(brige));
+    bribe->setValidator(new QDoubleValidator(bribe));
     connect(bribe, SIGNAL(editingFinished()), this, SLOT(BribeChanged()));
 
     security = new QLineEdit(this);
@@ -90,7 +90,7 @@ PlanetView::PlanetView(Map &mapData, QWidget *parent) :
     connect(tribute, SIGNAL(editingFinished()), this, SLOT(TributeChanged()));
 
     tributeThreshold = new QLineEdit(this);
-    tributeThreshold->setValidator(new QIntValidator(tributeThreshold;
+    tributeThreshold->setValidator(new QIntValidator(tributeThreshold));
     connect(tributeThreshold, SIGNAL(editingFinished()), this, SLOT(TributeThresholdChanged()));
 
     tributeFleetNames = new QLineEdit(this);

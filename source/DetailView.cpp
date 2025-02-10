@@ -87,7 +87,7 @@ DetailView::DetailView(Map &mapData, GalaxyView *galaxyView, QWidget *parent) :
     interstellarLayout->addWidget(new QLabel("Jump drive:", this), 2, 0, 1, 1);
     interstellarLayout->addWidget(new QLabel("Jump range:", this), 3, 2, 1, 1);
     hyperArrival = new QLineEdit(this);
-    hyperArrival->setValidator(new QDoubleValidator(hyperArrival;
+    hyperArrival->setValidator(new QDoubleValidator(hyperArrival));
     connect(hyperArrival, SIGNAL(editingFinished()), this, SLOT(HyperArrivalChanged()));
     interstellarLayout->addWidget(hyperArrival, 1, 1, 1, 1);
     jumpArrival = new QLineEdit(this);
