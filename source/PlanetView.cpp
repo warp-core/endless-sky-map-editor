@@ -23,6 +23,7 @@ PARTICULAR PURPOSE.  See the GNU General Public License for more details.
 #include <QIntValidator>
 #include <QLabel>
 #include <QLineEdit>
+#include <QListWidget>
 #include <QMessageBox>
 #include <QPlainTextEdit>
 #include <QRegularExpression>
@@ -68,10 +69,8 @@ PlanetView::PlanetView(Map &mapData, QWidget *parent) :
     spaceport->setTabStopDistance(20);
     connect(spaceport, SIGNAL(textChanged()), this, SLOT(SpaceportDescriptionChanged()));
 
-    shipyard = new QLineEdit(this);
-    connect(shipyard, SIGNAL(editingFinished()), this, SLOT(ShipyardChanged()));
-    outfitter = new QLineEdit(this);
-    connect(outfitter, SIGNAL(editingFinished()), this, SLOT(OutfitterChanged()));
+    shipyards = new QListWidget(this);
+    outfitters = new QListWidget(this);
 
     reputation = new QLineEdit(this);
     reputation->setValidator(new QDoubleValidator(reputation));
@@ -123,9 +122,9 @@ PlanetView::PlanetView(Map &mapData, QWidget *parent) :
     QVBoxLayout *salesWrapperLayout = new QVBoxLayout(this);
     QGridLayout *salesLayout = new QGridLayout(this);
     salesLayout->addWidget(new QLabel("Shipyard:", this), 0, 0);
-    salesLayout->addWidget(shipyard, 1, 0);
+    salesLayout->addWidget(shipyards, 1, 0);
     salesLayout->addWidget(new QLabel("Outfitter:", this), 0, 1);
-    salesLayout->addWidget(outfitter, 1, 1);
+    salesLayout->addWidget(outfitters, 1, 1);
     salesWrapperLayout->addLayout(salesLayout);
     salesWrapperLayout->addStretch();
     salesAndTribute->addLayout(salesWrapperLayout);
@@ -192,8 +191,8 @@ void PlanetView::SetPlanet(StellarObject *object)
         landscape->SetPlanet(nullptr);
         description->clear();
         spaceport->clear();
-        shipyard->clear();
-        outfitter->clear();
+        shipyards->clear();
+        outfitters->clear();
         reputation->clear();
         bribe->clear();
         security->clear();
@@ -222,8 +221,8 @@ void PlanetView::SetPlanet(StellarObject *object)
         spaceport->setPlainText(planet.SpaceportDescription());
         connect(spaceport, SIGNAL(textChanged()), this, SLOT(SpaceportDescriptionChanged()));
 
-        shipyard->setText(ToString(planet.Shipyard()));
-        outfitter->setText(ToString(planet.Outfitter()));
+        UpdateShipyards();
+        UpdateOutfitters();
         reputation->setText(std::isnan(planet.RequiredReputation()) ?
             QString() : QString::number(planet.RequiredReputation()));
         bribe->setText(std::isnan(planet.Bribe()) ?
@@ -364,34 +363,58 @@ void PlanetView::SpaceportDescriptionChanged()
 
 
 
-void PlanetView::ShipyardChanged()
+void PlanetView::ShipyardsChanged(QListWidgetItem *item)
 {
-    if(object && !object->GetPlanet().isEmpty())
-    {
-        vector<QString> list = ToList(shipyard->text());
-        Planet &planet = mapData.Planets()[object->GetPlanet()];
-        if(planet.Shipyard() != list)
-        {
-            planet.Shipyard() = list;
-            mapData.SetChanged();
-        }
-    }
+    if(!object || object->GetPlanet().isEmpty())
+        return;
+
+    int index = shipyards->items(nullptr).indexOf(item, 0);
+    if(index == -1)
+        return;
+
+    size_t uIndex = static_cast<size_t>(index);
+    Planet &planet = mapData.Planets()[object->GetPlanet()];
+
+    if(uIndex >= planet.Shipyards().size() && item->text().isEmpty())
+        return;
+    else if(uIndex >= planet.Shipyards().size())
+        planet.Shipyards().emplace_back(item->text());
+    else if(!item->text().isEmpty())
+        planet.Shipyards()[index] = item->text();
+    else if(item->text().isEmpty())
+        planet.Shipyards().erase(std::next(planet.Shipyards().begin(), index));
+
+    mapData.SetChanged();
+
+    UpdateShipyards();
 }
 
 
 
-void PlanetView::OutfitterChanged()
+void PlanetView::OutfittersChanged(QListWidgetItem *item)
 {
-    if(object && !object->GetPlanet().isEmpty())
-    {
-        vector<QString> list = ToList(outfitter->text());
-        Planet &planet = mapData.Planets()[object->GetPlanet()];
-        if(planet.Outfitter() != list)
-        {
-            planet.Outfitter() = list;
-            mapData.SetChanged();
-        }
-    }
+    if(!object || object->GetPlanet().isEmpty())
+        return;
+
+    int index = outfitters->items(nullptr).indexOf(item, 0);
+    if(index == -1)
+        return;
+
+    size_t uIndex = static_cast<size_t>(index);
+    Planet &planet = mapData.Planets()[object->GetPlanet()];
+
+    if(uIndex >= planet.Outfitters().size() && item->text().isEmpty())
+        return;
+    else if(uIndex >= planet.Outfitters().size())
+        planet.Outfitters().emplace_back(item->text());
+    else if(!item->text().isEmpty())
+        planet.Outfitters()[index] = item->text();
+    else if(item->text().isEmpty())
+        planet.Outfitters().erase(std::next(planet.Outfitters().begin(), index));
+
+    mapData.SetChanged();
+
+    UpdateOutfitters();
 }
 
 
@@ -488,6 +511,54 @@ void PlanetView::TributeFleetNamesChanged()
             mapData.SetChanged();
         }
     }
+}
+
+
+
+void PlanetView::UpdateShipyards()
+{
+    if(!object || object->GetPlanet().isEmpty() || !shipyards)
+        return;
+
+    disconnect(shipyards, SIGNAL(itemChanged(QListWidgetItem *)), this, SLOT(ShipyardsChanged(QListWidgetItem *)));
+    shipyards->clear();
+
+    for(const QString &ship : mapData.Planets()[object->GetPlanet()].Shipyards())
+    {
+        QListWidgetItem *item = new QListWidgetItem(shipyards);
+        item->setText(ship);
+        item->setFlags(item->flags() | Qt::ItemIsEditable);
+    }
+    {
+        // Add one last item, which is empty, but can be edited to add a row.
+        QListWidgetItem *item = new QListWidgetItem(shipyards);
+        item->setFlags(item->flags() | Qt::ItemIsEditable);
+    }
+    connect(shipyards, SIGNAL(itemChanged(QListWidgetItem *)), this, SLOT(ShipyardsChanged(QListWidgetItem *)));
+}
+
+
+
+void PlanetView::UpdateOutfitters()
+{
+    if(!object || object->GetPlanet().isEmpty() || !outfitters)
+        return;
+
+    disconnect(outfitters, SIGNAL(itemChanged(QListWidgetItem *)), this, SLOT(OutfittersChanged(QListWidgetItem *)));
+    outfitters->clear();
+
+    for(const QString &outfit : mapData.Planets()[object->GetPlanet()].Outfitters())
+    {
+        QListWidgetItem *item = new QListWidgetItem(outfitters);
+        item->setText(outfit);
+        item->setFlags(item->flags() | Qt::ItemIsEditable);
+    }
+    {
+        // Add one last item, which is empty, but can be edited to add a row.
+        QListWidgetItem *item = new QListWidgetItem(outfitters);
+        item->setFlags(item->flags() | Qt::ItemIsEditable);
+    }
+    connect(outfitters, SIGNAL(itemChanged(QListWidgetItem *)), this, SLOT(OutfittersChanged(QListWidgetItem *)));
 }
 
 

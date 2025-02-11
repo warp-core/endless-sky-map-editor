@@ -420,14 +420,14 @@ vector<QString> &Planet::Attributes()
 
 
 
-vector<QString> &Planet::Shipyard()
+vector<QString> &Planet::Shipyards()
 {
     return shipyard;
 }
 
 
 
-vector<QString> &Planet::Outfitter()
+vector<QString> &Planet::Outfitters()
 {
     return outfitter;
 }

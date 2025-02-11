@@ -16,6 +16,8 @@ PARTICULAR PURPOSE.  See the GNU General Public License for more details.
 #include <QWidget>
 
 class QLineEdit;
+class QListWidget;
+class QListWidgetItem;
 class QPlainTextEdit;
 class QCheckBox;
 
@@ -44,8 +46,8 @@ public slots:
     void GovernmentChanged();
     void DescriptionChanged();
     void SpaceportDescriptionChanged();
-    void ShipyardChanged();
-    void OutfitterChanged();
+    void ShipyardsChanged(QListWidgetItem *item);
+    void OutfittersChanged(QListWidgetItem *item);
     void ReputationChanged();
     void BribeChanged();
     void SecurityChanged();
@@ -53,6 +55,12 @@ public slots:
     void TributeChanged();
     void TributeThresholdChanged();
     void TributeFleetNamesChanged();
+
+
+private:
+    void UpdateShipyards();
+    void UpdateOutfitters();
+
 
 private:
     static QString ToString(const std::vector<QString> &list);
@@ -70,8 +78,8 @@ private:
     LandscapeView *landscape;
     QPlainTextEdit *description;
     QPlainTextEdit *spaceport;
-    QLineEdit *shipyard;
-    QLineEdit *outfitter;
+    QListWidget *shipyards;
+    QListWidget *outfitters;
     QLineEdit *reputation;
     QLineEdit *bribe;
     QLineEdit *security;

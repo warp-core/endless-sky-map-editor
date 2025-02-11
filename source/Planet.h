@@ -85,8 +85,8 @@ public:
     void SetDescription(const QString &text);
     void SetSpaceportDescription(const QString &text);
     std::vector<QString> &Attributes();
-    std::vector<QString> &Shipyard();
-    std::vector<QString> &Outfitter();
+    std::vector<QString> &Shipyards();
+    std::vector<QString> &Outfitters();
     void SetGovernment(const QString &newGovernment);
     void SetRequiredReputation(double value);
     void SetBribe(double value);
