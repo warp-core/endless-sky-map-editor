@@ -368,16 +368,12 @@ void PlanetView::ShipyardsChanged(QListWidgetItem *item)
     if(!object || object->GetPlanet().isEmpty())
         return;
 
-    int index = shipyards->items(nullptr).indexOf(item, 0);
-    if(index == -1)
-        return;
-
-    size_t uIndex = static_cast<size_t>(index);
+    size_t index = shipyards->row(item);
     Planet &planet = mapData.Planets()[object->GetPlanet()];
 
-    if(uIndex >= planet.Shipyards().size() && item->text().isEmpty())
+    if(index >= planet.Shipyards().size() && item->text().isEmpty())
         return;
-    else if(uIndex >= planet.Shipyards().size())
+    else if(index >= planet.Shipyards().size())
         planet.Shipyards().emplace_back(item->text());
     else if(!item->text().isEmpty())
         planet.Shipyards()[index] = item->text();
@@ -396,16 +392,12 @@ void PlanetView::OutfittersChanged(QListWidgetItem *item)
     if(!object || object->GetPlanet().isEmpty())
         return;
 
-    int index = outfitters->items(nullptr).indexOf(item, 0);
-    if(index == -1)
-        return;
-
-    size_t uIndex = static_cast<size_t>(index);
+    size_t index = outfitters->row(item);
     Planet &planet = mapData.Planets()[object->GetPlanet()];
 
-    if(uIndex >= planet.Outfitters().size() && item->text().isEmpty())
+    if(index >= planet.Outfitters().size() && item->text().isEmpty())
         return;
-    else if(uIndex >= planet.Outfitters().size())
+    else if(index >= planet.Outfitters().size())
         planet.Outfitters().emplace_back(item->text());
     else if(!item->text().isEmpty())
         planet.Outfitters()[index] = item->text();
