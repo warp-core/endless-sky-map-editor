@@ -45,7 +45,7 @@ jobs:
         dir
         cd vcpkg_installed
         dir
-        cd x64-windows
+        cd win64-release
         dir
         cd bin
         dir
