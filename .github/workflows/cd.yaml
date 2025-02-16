@@ -39,6 +39,9 @@ jobs:
     - name: Package Application
       run: |
         cmake --install build/release
+        copy /B build/release/vcpkg_installed/x64-windows/bin/jpeg62.dll /install/release
+        copy /B build/release/vcpkg_installed/x64-windows/Qt6/plugins/imageformats/qjpeg.dll /install/release/imageformats/
+        copy /B build/release/vcpkg_installed/x64-windows/Qt6/plugins/platforms/qwindows.dll /install/release/platforms/
         7z a ${{ env.OUTPUT }} "./install/release/*"
     - name: Upload artifact
       uses: actions/upload-artifact@v4
