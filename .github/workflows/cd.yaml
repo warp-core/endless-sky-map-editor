@@ -36,6 +36,13 @@ jobs:
       with:
         configurePreset: 'mingw-release'
         buildPreset: 'mingw-ci-release'
+    - name: Test
+      run: |
+        dir
+        cd build
+        dir
+        cd release
+        dir
     - name: Package Application
       run: |
         cmake --install build/release
