@@ -43,6 +43,20 @@ jobs:
         dir
         cd release
         dir
+        cd vcpkg_installed
+        dir
+        cd x64-windows
+        dir
+        cd bin
+        dir
+        cd ../Qt6
+        dir
+        cd plugins
+        dir
+        cd imageformats
+        dir
+        cd ../platforms
+        dir
     - name: Package Application
       run: |
         cmake --install build/release
