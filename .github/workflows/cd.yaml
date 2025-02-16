@@ -39,6 +39,13 @@ jobs:
     - name: Package Application
       run: |
         cmake --install build/release
+        copy -Path build/release/vcpkg_installed/win64-release/bin/libjpeg-62.dll -Destination install/release/jpeg62.dll
+        cd install/release
+        mkdir imageformats
+        mkdir platforms
+        cd ../..
+        copy -Path build/release/vcpkg_installed/win64-release/Qt6/plugins/imageformats/qjpeg.dll -Destination install/release/imageformats/qjpeg.dll
+        copy -Path build/release/vcpkg_installed/win64-release/Qt6/plugins/platforms/qwindows.dll -Destination install/release/platforms/qwindows.dll
         7z a ${{ env.OUTPUT }} "./install/release/*"
     - name: Upload artifact
       uses: actions/upload-artifact@v4
