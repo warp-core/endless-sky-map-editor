@@ -36,27 +36,6 @@ jobs:
       with:
         configurePreset: 'mingw-release'
         buildPreset: 'mingw-ci-release'
-    - name: Test
-      run: |
-        dir
-        cd build
-        dir
-        cd release
-        dir
-        cd vcpkg_installed
-        dir
-        cd win64-release
-        dir
-        cd bin
-        dir
-        cd ../Qt6
-        dir
-        cd plugins
-        dir
-        cd imageformats
-        dir
-        cd ../platforms
-        dir
     - name: Package Application
       run: |
         cmake --install build/release
