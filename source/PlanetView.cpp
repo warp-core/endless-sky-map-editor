@@ -26,8 +26,9 @@ PARTICULAR PURPOSE.  See the GNU General Public License for more details.
 #include <QListWidget>
 #include <QMessageBox>
 #include <QPlainTextEdit>
-#include <QRegularExpression>
-#include <QRegularExpressionValidator>
+#include <QSpinBox>
+#include <QTreeWidget>
+#include <QTreeWidgetItem>
 
 #include <cmath>
 #include <limits>
@@ -92,9 +93,10 @@ PlanetView::PlanetView(Map &mapData, QWidget *parent) :
     tributeThreshold->setValidator(new QIntValidator(tributeThreshold));
     connect(tributeThreshold, SIGNAL(editingFinished()), this, SLOT(TributeThresholdChanged()));
 
-    tributeFleetNames = new QLineEdit(this);
-    connect(tributeFleetNames, SIGNAL(editingFinished()), this, SLOT(TributeFleetNamesChanged()));
-
+    tributeFleets = new QTreeWidget(this);
+    tributeFleets->setIndentation(0);
+    tributeFleets->setColumnCount(2);
+    tributeFleets->setHeaderLabels({"Fleet", "Count"});
 
     QGridLayout *layout = new QGridLayout(this);
     int row = 1;
@@ -139,11 +141,10 @@ PlanetView::PlanetView(Map &mapData, QWidget *parent) :
     //tributeNumberLayout->addStretch();
     tributeLayout->addWidget(new QLabel("Tribute:", this), 0, 0);
     tributeLayout->addWidget(tribute, 0, 1);
-    tributeLayout->addWidget(new QLabel("Threshold:", this), 0, 2);
-    tributeLayout->addWidget(tributeThreshold, 0, 3);
+    tributeLayout->addWidget(new QLabel("Threshold:", this), 1, 0);
+    tributeLayout->addWidget(tributeThreshold, 1, 1);
     //tributeLayout->addWidget(tributeBox, 0, 1, 1, -1);
-    tributeLayout->addWidget(new QLabel("Fleets:", this), 1, 0);
-    tributeLayout->addWidget(tributeFleetNames, 1, 1, 1, -1);
+    //tributeLayout->addWidget(tributeFleets, 0, 2, -1, -1);
 
     /*QWidget *box = new QWidget(this);
     QHBoxLayout *hLayout = new QHBoxLayout(box);
@@ -157,16 +158,24 @@ PlanetView::PlanetView(Map &mapData, QWidget *parent) :
     hLayout->addStretch();
     tributeLayout->addWidget(box, 2, 0, 1, -1);*/
 
-    QHBoxLayout *requiredReputationRowLayout = new QHBoxLayout(this);
+    /*QHBoxLayout *requiredReputationRowLayout = new QHBoxLayout(this);
     requiredReputationRowLayout->addWidget(new QLabel("Required reputation:", this));
     requiredReputationRowLayout->addWidget(reputation);
-    tributeLayout->addLayout(requiredReputationRowLayout, 2, 0, 1, -1);
-    tributeLayout->addWidget(new QLabel("Security:", this), 3, 0);
-    tributeLayout->addWidget(security, 3, 1);
-    tributeLayout->addWidget(new QLabel("Bribe:", this), 3, 2);
-    tributeLayout->addWidget(bribe, 3, 3);
+    tributeLayout->addLayout(requiredReputationRowLayout, 2, 0, 1, -1);*/
+    tributeLayout->addWidget(new QLabel("Required reputation:", this), 2, 0, 1, 2);
+    tributeLayout->addWidget(reputation, 3, 0, 1, 2);
+    tributeLayout->addWidget(new QLabel("Security:", this), 4, 0);
+    tributeLayout->addWidget(security, 4, 1);
+    tributeLayout->addWidget(new QLabel("Bribe:", this), 5, 0);
+    tributeLayout->addWidget(bribe, 5, 1);
 
-    salesAndTribute->addLayout(tributeLayout);
+    QVBoxLayout *tributeWrapper = new QVBoxLayout(this);
+    tributeWrapper->addLayout(tributeLayout);
+    tributeWrapper->addStretch();
+
+    salesAndTribute->addLayout(tributeWrapper);
+    salesAndTribute->addWidget(tributeFleets);
+    salesAndTribute->addStretch();
     layout->addLayout(salesAndTribute, row++, 0, 1, -1);
 
     setLayout(layout);
@@ -198,7 +207,8 @@ void PlanetView::SetPlanet(StellarObject *object)
         security->clear();
         tribute->clear();
         tributeThreshold->clear();
-        tributeFleetNames->clear();
+        tributeFleets->clear();
+        tributeFleetSpinMap.clear();
     }
     else
     {
@@ -223,6 +233,7 @@ void PlanetView::SetPlanet(StellarObject *object)
 
         UpdateShipyards();
         UpdateOutfitters();
+        UpdateTributeFleets();
         reputation->setText(std::isnan(planet.RequiredReputation()) ?
             QString() : QString::number(planet.RequiredReputation()));
         bribe->setText(std::isnan(planet.Bribe()) ?
@@ -233,8 +244,6 @@ void PlanetView::SetPlanet(StellarObject *object)
             QString() : QString::number(planet.Tribute()));
         tributeThreshold->setText(std::isnan(planet.TributeThreshold()) ?
             QString() : QString::number(planet.TributeThreshold()));
-        tributeFleetNames->setText(ToString(planet.TributeFleetNames()));
-
     }
 }
 
@@ -491,18 +500,48 @@ void PlanetView::TributeThresholdChanged()
 
 
 
-void PlanetView::TributeFleetNamesChanged()
+void PlanetView::TributeFleetChanged(QTreeWidgetItem *item, int column)
 {
-    if(object && !object->GetPlanet().isEmpty())
-    {
-        vector<QString> newFleetNames = ToList(tributeFleetNames->text());
-        Planet &planet = mapData.Planets()[object->GetPlanet()];
-        if(planet.TributeFleetNames() != newFleetNames)
-        {
-            planet.TributeFleetNames() = newFleetNames;
-            mapData.SetChanged();
-        }
-    }
+    if(!object || object->GetPlanet().isEmpty())
+        return;
+
+    if(column != 0)
+        return;
+
+    Planet &planet = mapData.Planets()[object->GetPlanet()];
+
+    unsigned row = item->text(2).toInt();
+    if(row == planet.TributeFleets().size())
+        planet.TributeFleets().emplace_back(item->text(0), item->text(1).toInt());
+    else if(item->text(0).isEmpty())
+        planet.TributeFleets().erase(planet.TributeFleets().begin() + row);
+    else if(column == 0)
+        planet.TributeFleets()[row].first = item->text(0);
+    else
+        return;
+
+    mapData.SetChanged();
+
+    UpdateTributeFleets();
+}
+
+
+
+void PlanetView::TributeFleetCountChanged(int value)
+{
+    if(!object || object->GetPlanet().isEmpty())
+        return;
+
+    auto it = tributeFleetSpinMap.find(sender());
+    if(it == tributeFleetSpinMap.end())
+        return;
+
+    Planet &planet = mapData.Planets()[object->GetPlanet()];
+
+    tributeFleets->setCurrentItem(it->second);
+
+    planet.TributeFleets()[it->second->text(2).toInt()].second = value;
+    mapData.SetChanged();
 }
 
 
@@ -551,6 +590,54 @@ void PlanetView::UpdateOutfitters()
         item->setFlags(item->flags() | Qt::ItemIsEditable);
     }
     connect(outfitters, SIGNAL(itemChanged(QListWidgetItem *)), this, SLOT(OutfittersChanged(QListWidgetItem *)));
+}
+
+
+
+void PlanetView::UpdateTributeFleets()
+{
+    int selectedIndex = -1;
+    if(tributeFleets && tributeFleets->currentItem())
+        selectedIndex = tributeFleets->currentItem()->text(2).toInt();
+
+    disconnect(tributeFleets, SIGNAL(itemChanged(QTreeWidgetItem *, int)),
+            this, SLOT(TributeFleetChanged(QTreeWidgetItem *, int)));
+    tributeFleets->clear();
+    tributeFleetSpinMap.clear();
+    int currentIndex = 0;
+    for(const auto &[fleetName, fleetCount] : mapData.Planets()[object->GetPlanet()].TributeFleets())
+    {
+        QTreeWidgetItem *item = new QTreeWidgetItem(tributeFleets);
+        item->setText(0, fleetName);
+        item->setText(2, QString::number(currentIndex));
+        item->setFlags(item->flags() | Qt::ItemIsEditable);
+
+        QSpinBox *spin = new QSpinBox(tributeFleets);
+        spin->setMinimum(0);
+        spin->setMaximum(9999);
+        spin->setValue(fleetCount);
+        spin->setSingleStep(1);
+        spin->setFixedWidth(50);
+        tributeFleetSpinMap[spin] = item;
+        connect(spin, SIGNAL(valueChanged(int)), this, SLOT(TributeFleetCountChanged(int)));
+
+        tributeFleets->insertTopLevelItem(tributeFleets->topLevelItemCount(), item);
+        tributeFleets->setItemWidget(item, 1, spin);
+
+        if(currentIndex == selectedIndex)
+            tributeFleets->setCurrentItem(item, 0);
+        ++currentIndex;
+    }
+    {
+        QTreeWidgetItem *item = new QTreeWidgetItem(tributeFleets);
+        item->setText(2, QString::number(currentIndex));
+        item->setFlags(item->flags() | Qt::ItemIsEditable);
+        tributeFleets->insertTopLevelItem(tributeFleets->topLevelItemCount(), item);
+    }
+    tributeFleets->resizeColumnToContents(0);
+    tributeFleets->resizeColumnToContents(1);
+    connect(tributeFleets, SIGNAL(itemChanged(QTreeWidgetItem *, int)),
+            this, SLOT(TributeFleetChanged(QTreeWidgetItem *, int)));
 }
 
 

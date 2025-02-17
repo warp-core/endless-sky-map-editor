@@ -15,11 +15,14 @@ PARTICULAR PURPOSE.  See the GNU General Public License for more details.
 
 #include <QWidget>
 
+#include <map>
+
 class QLineEdit;
 class QListWidget;
 class QListWidgetItem;
 class QPlainTextEdit;
-class QCheckBox;
+class QTreeWidget;
+class QTreeWidgetItem;
 
 class LandscapeView;
 class Map;
@@ -54,12 +57,14 @@ public slots:
 
     void TributeChanged();
     void TributeThresholdChanged();
-    void TributeFleetNamesChanged();
+    void TributeFleetChanged(QTreeWidgetItem *item, int column);
+    void TributeFleetCountChanged(int value);
 
 
 private:
     void UpdateShipyards();
     void UpdateOutfitters();
+    void UpdateTributeFleets();
 
 
 private:
@@ -85,7 +90,8 @@ private:
     QLineEdit *security;
     QLineEdit *tribute;
     QLineEdit *tributeThreshold;
-    QLineEdit *tributeFleetNames;
+    QTreeWidget *tributeFleets;
+    std::map<QObject *, QTreeWidgetItem *> tributeFleetSpinMap;
 };
 
 #endif // PLANETVIEW_H

@@ -96,7 +96,7 @@ void  Planet::LoadTribute(const DataNode &node)
         else if(child.Token(0) == "fleet" && child.Size() >= 2)
         {
             int fleetCount = child.Size() >= 3 ? child.Value(2) : 1;
-            tributeFleetNames.insert(tributeFleetNames.end(), fleetCount, child.Token(1));
+            tributeFleets.emplace_back(child.Token(1), fleetCount);
         }
         else
             tributeUnparsed.push_back(child);
@@ -170,30 +170,13 @@ void Planet::Save(DataWriter &file) const
             {
                 file.Write("threshold", tributeThreshold);
                 QString lastFleetName;
-                int lastFleetCount = 0;
-                for(size_t i = 0; i < tributeFleetNames.size(); ++i)
+                for(const auto &it : tributeFleets)
                 {
-                    if(lastFleetCount == 0)
-                    {
-                        ++lastFleetCount;
-                        lastFleetName = tributeFleetNames[i];
-                    }
-                    else if(tributeFleetNames[i] == lastFleetName)
-                        ++lastFleetCount;
+                    if(it.second == 1)
+                        file.Write("fleet", it.first);
                     else
-                    {
-                        if(lastFleetCount == 1)
-                            file.Write("fleet", lastFleetName);
-                        else
-                            file.Write("fleet", lastFleetName, lastFleetCount);
-                        lastFleetName = tributeFleetNames[i];
-                        lastFleetCount = 1;
-                    }
+                        file.Write("fleet", it.first, it.second);
                 }
-                if(lastFleetCount == 1)
-                    file.Write("fleet", lastFleetName);
-                else
-                    file.Write("fleet", lastFleetName, lastFleetCount);
                 for(const DataNode &node : tributeUnparsed)
                     file.Write(node);
             }
@@ -476,7 +459,7 @@ void Planet::SetTributeThreshold(double value)
 
 
 
-vector<QString> &Planet::TributeFleetNames()
+vector<pair<QString, int>> &Planet::TributeFleets()
 {
-    return tributeFleetNames;
+    return tributeFleets;
 }
