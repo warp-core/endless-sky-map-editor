@@ -93,7 +93,7 @@ public:
     void SetSecurity(double value);
     void SetTribute(double value);
     void SetTributeThreshold(double value);
-    std::vector<QString> &TributeFleetNames();
+    std::vector<std::pair<QString, int>> &TributeFleets();
 
 private:
     QString trueName;
@@ -107,7 +107,7 @@ private:
     mutable bool spaceportFilled = false;
     QString government;
     QString music;
-    std::vector<QString> tributeFleetNames;
+    std::vector<std::pair<QString, int>> tributeFleets;
 
     // Use a vector so the printing order is preserved.
     std::vector<QString> attributes;
