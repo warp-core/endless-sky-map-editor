@@ -47,7 +47,7 @@ jobs:
 
   build_windows:
     name: Windows
-    runs-on: windows-2022
+    runs-on: windows-2025
     steps:
     - uses: actions/checkout@v4
       with:
@@ -62,7 +62,7 @@ jobs:
 
   build_windows_clang:
     name: Windows Clang
-    runs-on: windows-2022
+    runs-on: windows-2025
     steps:
     - uses: actions/checkout@v4
       with:
