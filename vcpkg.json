@@ -3,7 +3,6 @@
     {
       "name": "qtbase",
       "features": [
-        "default-features",
         "icu",
         "gui",
         "jpeg",
