@@ -37,9 +37,20 @@ jobs:
         # sudo apt-get install -y --no-install-recommends autoconf-archive
         # sudo apt-get install -y --no-install-recommends libx11-xcb-dev
         # sudo apt-get install -y --no-install-recommends libxrender-dev
-        # sudo apt-get install -y --no-install-recommends libxkbcommon-x11-dev \
-          libxmu-dev libxi-dev libgl-dev libglu1-mesa-dev libgles2-mesa-dev libwayland-dev libxkbcommon-dev libegl1-mesa-dev \
-          libosmesa6 mesa-utils libglvnd-dev x11-utils '^libxcb.*-dev'
+        sudo apt-get install -y --no-install-recommends libxkbcommon-x11-dev
+        sudo apt-get install -y --no-install-recommends libxmu-dev
+        sudo apt-get install -y --no-install-recommends libxi-dev
+        sudo apt-get install -y --no-install-recommends libgl-dev
+        sudo apt-get install -y --no-install-recommends libglu1-mesa-dev
+        sudo apt-get install -y --no-install-recommends libgles2-mesa-dev
+        sudo apt-get install -y --no-install-recommends libwayland-dev
+        sudo apt-get install -y --no-install-recommends libxkbcommon-dev
+        sudo apt-get install -y --no-install-recommends libegl1-mesa-dev
+        sudo apt-get install -y --no-install-recommends libosmesa6
+        sudo apt-get install -y --no-install-recommends mesa-utils
+        sudo apt-get install -y --no-install-recommends libglvnd-dev
+        sudo apt-get install -y --no-install-recommends x11-utils
+        sudo apt-get install -y --no-install-recommends '^libxcb.*-dev'
     - uses: lukka/get-cmake@v3.28.3
     - uses: lukka/run-vcpkg@v11
     - uses: lukka/run-cmake@v10
