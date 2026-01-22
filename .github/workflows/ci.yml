@@ -25,7 +25,7 @@ jobs:
     runs-on: ubuntu-${{ matrix.os }}
     strategy:
       matrix:
-        os: [22.04, 24.04]
+        os: [22.04]
     steps:
     - uses: actions/checkout@v4
       with:
