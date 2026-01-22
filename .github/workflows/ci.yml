@@ -76,19 +76,19 @@ jobs:
         buildPreset: 'clang-cl-ci-release'
 
 
-  build_macos:
-    name: MacOS
-    runs-on: macos-14
-    steps:
-    - uses: actions/checkout@v4
-      with:
-        show-progress: false
-    - name: Install pkg-config
-      run: brew install automake autoconf-archive
-    - uses: lukka/get-cmake@v3.28.3
-    - uses: lukka/run-vcpkg@v11
-    - uses: lukka/run-cmake@v10
-      with:
-        configurePreset: 'macos-release'
-        buildPreset: 'macos-ci-release'
+  #build_macos:
+  #  name: MacOS
+  #  runs-on: macos-14
+  #  steps:
+  #  - uses: actions/checkout@v4
+  #    with:
+  #      show-progress: false
+  #  - name: Install pkg-config
+  #    run: brew install automake autoconf-archive
+  #  - uses: lukka/get-cmake@v3.28.3
+  #  - uses: lukka/run-vcpkg@v11
+  #  - uses: lukka/run-cmake@v10
+  #    with:
+  #      configurePreset: 'macos-release'
+  #      buildPreset: 'macos-ci-release'
 

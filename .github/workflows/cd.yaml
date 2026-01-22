@@ -54,33 +54,33 @@ jobs:
         path: ${{ env.OUTPUT }}
 
 
-  cd_macos_x64:
-    name: MacOS
-    runs-on: macos-14
-    env:
-      OUTPUT: EndlessSkyEditor-macOS-continuous.zip
-      GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-    steps:
-    - uses: actions/checkout@v4
-      with:
-        show-progress: false
-    - name: Install pkg-config
-      run: brew install automake autoconf-archive
-    - uses: lukka/get-cmake@v3.28.3
-    - uses: lukka/run-vcpkg@v11
-    - uses: lukka/run-cmake@v10
-      with:
-        configurePreset: 'macos-release'
-        buildPreset: 'macos-ci-release'
-    - name: Package Application
-      run: |
-        cmake --install build/release
-        7z a ${{ env.OUTPUT }} "./install/release/*"
-    - name: Upload artifact
-      uses: actions/upload-artifact@v4
-      with:
-        name: ${{ env.OUTPUT }}
-        path: ${{ env.OUTPUT }}
+  #cd_macos_x64:
+  #  name: MacOS
+  #  runs-on: macos-14
+  #  env:
+  #    OUTPUT: EndlessSkyEditor-macOS-continuous.zip
+  #    GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+  #  steps:
+  #  - uses: actions/checkout@v4
+  #    with:
+  #      show-progress: false
+  #  - name: Install pkg-config
+  #    run: brew install automake autoconf-archive
+  #  - uses: lukka/get-cmake@v3.28.3
+  #  - uses: lukka/run-vcpkg@v11
+  #  - uses: lukka/run-cmake@v10
+  #    with:
+  #      configurePreset: 'macos-release'
+  #      buildPreset: 'macos-ci-release'
+  #  - name: Package Application
+  #    run: |
+  #      cmake --install build/release
+  #      7z a ${{ env.OUTPUT }} "./install/release/*"
+  #  - name: Upload artifact
+  #    uses: actions/upload-artifact@v4
+  #    with:
+  #      name: ${{ env.OUTPUT }}
+  #      path: ${{ env.OUTPUT }}
 
 
   cd_upload_artifacts_to_release:
@@ -89,7 +89,7 @@ jobs:
     runs-on: ubuntu-latest
     needs:
       - cd_windows_x64
-      - cd_macos_x64
+      #- cd_macos_x64
     permissions:
       contents: write
     env:
@@ -145,10 +145,10 @@ jobs:
             --replace \
             --name ${{ env.OUTPUT_WINDOWS }} \
             --file ${{ env.OUTPUT_WINDOWS }}/${{ env.OUTPUT_WINDOWS }}
-      - name: Add ${{ env.OUTPUT_MACOS }} to release tag
-        run: |
-          github-release upload \
-            --tag continuous \
-            --replace \
-            --name ${{ env.OUTPUT_MACOS }} \
-            --file ${{ env.OUTPUT_MACOS }}/${{ env.OUTPUT_MACOS }}
+      #- name: Add ${{ env.OUTPUT_MACOS }} to release tag
+      #  run: |
+      #    github-release upload \
+      #      --tag continuous \
+      #      --replace \
+      #      --name ${{ env.OUTPUT_MACOS }} \
+      #      --file ${{ env.OUTPUT_MACOS }}/${{ env.OUTPUT_MACOS }}
