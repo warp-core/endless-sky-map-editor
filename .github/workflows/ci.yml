@@ -34,7 +34,7 @@ jobs:
       run: |
         sudo rm /etc/apt/sources.list.d/* && sudo dpkg --clear-avail # Speed up installation and get rid of unwanted lists
         sudo apt-get update
-        # sudo apt-get install -y --no-install-recommends autoconf-archive
+        sudo apt-get install -y --no-install-recommends autoconf-archive
         # sudo apt-get install -y --no-install-recommends libx11-xcb-dev
         # sudo apt-get install -y --no-install-recommends libxrender-dev
         # sudo apt-get install -y --no-install-recommends libxkbcommon-x11-dev
