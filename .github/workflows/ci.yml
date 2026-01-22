@@ -35,23 +35,9 @@ jobs:
       run: |
         sudo rm /etc/apt/sources.list.d/* && sudo dpkg --clear-avail # Speed up installation and get rid of unwanted lists
         sudo apt-get update
-        sudo apt-get install -y --no-install-recommends autoconf-archive
-        sudo apt-get install -y --no-install-recommends libx11-xcb-dev
-        sudo apt-get install -y --no-install-recommends libxrender-dev
-        sudo apt-get install -y --no-install-recommends libxkbcommon-x11-dev
-        # sudo apt-get install -y --no-install-recommends libxmu-dev
-        sudo apt-get install -y --no-install-recommends libxi-dev
-        # sudo apt-get install -y --no-install-recommends libgl-dev
-        sudo apt-get install -y --no-install-recommends libglu1-mesa-dev
-        # sudo apt-get install -y --no-install-recommends libgles2-mesa-dev
-        # sudo apt-get install -y --no-install-recommends libwayland-dev
-        sudo apt-get install -y --no-install-recommends libxkbcommon-dev
-        sudo apt-get install -y --no-install-recommends libegl1-mesa-dev
-        # sudo apt-get install -y --no-install-recommends libosmesa6
-        # sudo apt-get install -y --no-install-recommends mesa-utils
-        # sudo apt-get install -y --no-install-recommends libglvnd-dev
-        # sudo apt-get install -y --no-install-recommends x11-utils
-        sudo apt-get install -y --no-install-recommends '^libxcb.*-dev'
+        sudo apt-get install -y --no-install-recommends autoconf-archive libx11-xcb-dev libxrender-dev \
+          libxkbcommon-x11-dev libxi-dev libglu1-mesa-dev libxkbcommon-dev \
+          libegl1-mesa-dev '^libxcb.*-dev'
     - uses: lukka/get-cmake@v3.28.3
     - uses: lukka/run-vcpkg@v11
     - uses: lukka/run-cmake@v10
